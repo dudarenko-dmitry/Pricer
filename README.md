@@ -1,19 +1,27 @@
 Task:
-Develop a Restful WEB project that fully implements one of the sets of requirements described below.
+Develop a Restful WEB project that fully implements the set of requirements described below.
 A web interface is not required; it is sufficient to implement an API for access through Postman/Insomnia.
 
 <<< Project. Food Price Monitoring Service >>>
-Application must have next functiofunctionality:
-o	User registration (administrators, regular users).
+Application must have next functionality:
+o	User registration (administrators, regular users).    
+??? (which actions they should implement)
 o	Profile editing.
-o	Directory of product categories, directory of trading points.
+o	Directory of product categories                       
+??? (separate table OR choose from ENUM)
+o	Directory of trading points.                          
+??? (divide on group or category by size for example)
 o	View a list of products by categories. Search and filtering.
 o	Ability to add/edit/delete a product.
-o	Ability to link the price to a specific product in a store at the current moment. ?
-o	Ability to track price dynamics for a specific product in a given period.
+o	Ability to link the price to a specific product in a store at the current moment.
+??? (get it by GET-request OR create separate table with all prices' records)
+o	Ability to track price dynamics for a specific product in a given period.     
+??? (use average price in all shops on date)
 o	Price comparison for items in different stores (at least two).
-o	Ability to graphically display price change dynamics. (returning an array of points in the response body of the REST method will be sufficient for graph construction)
+o	Ability to graphically display price change dynamics.
+    (returning an array of points in the response body of the REST method will be sufficient for graph construction)
 o	Ability to batch add information about prices and products (e.g., loading in CSV, xlsx format).
+???(how transfer file in POST-request)
 
 
 <<< General Requirements for the Assignment >>>
