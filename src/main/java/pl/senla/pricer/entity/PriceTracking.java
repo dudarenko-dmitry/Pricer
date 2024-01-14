@@ -24,12 +24,15 @@ public class PriceTracking implements Serializable {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id")
     private Shop shop;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @Column(name = "price", nullable = false)
+    private Integer price;
 
     @Column(name = "registration_date", nullable = false)
     private LocalDate date;
