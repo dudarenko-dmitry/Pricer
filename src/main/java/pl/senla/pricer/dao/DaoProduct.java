@@ -6,4 +6,5 @@ import pl.senla.pricer.entity.Product;
 
 @Repository
 public interface DaoProduct  extends JpaRepository<Product, Long> {
+
 }

@@ -6,4 +6,5 @@ import pl.senla.pricer.entity.Shop;
 
 @Repository
 public interface DaoShop  extends JpaRepository<Shop, Long> {
+
 }

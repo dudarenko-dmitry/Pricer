@@ -12,7 +12,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "category")
+@Table(name = "category",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name"}))
 public class Category implements Serializable {
 
     @Serial

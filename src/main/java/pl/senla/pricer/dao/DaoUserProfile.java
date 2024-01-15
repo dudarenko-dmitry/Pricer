@@ -6,4 +6,5 @@ import pl.senla.pricer.entity.UserProfile;
 
 @Repository
 public interface DaoUserProfile extends JpaRepository<UserProfile, Long> {
+
 }

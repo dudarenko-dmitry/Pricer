@@ -6,4 +6,5 @@ import pl.senla.pricer.entity.PriceTracking;
 
 @Repository
 public interface DaoPriceTracking  extends JpaRepository<PriceTracking, Long> {
+
 }

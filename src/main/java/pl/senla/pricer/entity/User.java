@@ -12,10 +12,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(
-        name = "user",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"email"})
-)
+@Table(name = "user",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"email"}))
 public class User implements Serializable {
 
     @Serial
