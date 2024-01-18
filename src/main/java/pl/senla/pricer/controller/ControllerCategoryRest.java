@@ -9,6 +9,7 @@ import pl.senla.pricer.utils.CategoryDtoConverter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/categories")
@@ -20,17 +21,20 @@ public class ControllerCategoryRest implements ControllerCategory{
 
     @Override
     @GetMapping
-    public List<CategoryDto> readAll(
-            @RequestParam(value = "sort", required = false, defaultValue = "id") String sortBy,
-            @RequestParam(value = "filter_name", required = false) String filter,
-            @RequestParam(value = "", required = false) String startDate,
-            @RequestParam(value = "", required = false) String endDate) {
+    public List<CategoryDto> readAll(@RequestParam Map<String,String> requestParams) {
         log.debug("ControllerCategory 'ReadAll'");
-        log.info("Categories sorted by {} and filtered by {}", sortBy, filter);
-        if (filter != null) {
-            return Collections.singletonList(CategoryDtoConverter.convertCategoryToDto(serviceCategory.readByName(filter)));
+        if(requestParams.isEmpty()) {
+            return serviceCategory.readAll().stream()
+                    .map(CategoryDtoConverter::convertCategoryToDto)
+                    .toList();
+        }
+        String sort = requestParams.get("sort");
+        String name = requestParams.get("name");
+        log.info("Categories sorted by {} or filtered by name {}", sort, name);
+        if (name != null) {
+            return Collections.singletonList(CategoryDtoConverter.convertCategoryToDto(serviceCategory.readByName(name)));
         } else {
-            switch(sortBy) {
+            switch(sort) {
                 case "id" -> {
                     return serviceCategory.readAll().stream()
                             .map(CategoryDtoConverter::convertCategoryToDto)

@@ -1,10 +1,11 @@
 package pl.senla.pricer.controller;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ControllerCRUDAll<T> {
 
-    List<T> readAll(String sortBy, String filter, String startDate, String endDate);
+    List<T> readAll(Map<String,String> requestParams);
     T create(T t);
     T read(Long id);
     T update(Long id, T t);

@@ -1,6 +1,14 @@
 package pl.senla.pricer.service;
 
+import pl.senla.pricer.dto.ProductDto;
 import pl.senla.pricer.entity.Product;
 
-public interface ServiceProduct extends ServiceCRUDAll<Product, Long> {
+import java.util.List;
+
+public interface ServiceProduct extends ServiceCRUDAll<Product, ProductDto> {
+
+    List<Product> readAllByOrderByName();
+    List<Product> readAllByOrderByCategory();
+    Product readByName(String name);
+
 }

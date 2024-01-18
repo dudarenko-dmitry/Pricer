@@ -6,9 +6,8 @@ A web interface is not required; it is sufficient to implement an API for access
 Application must have next functionality:
 o	User registration (administrators, regular users).
 o	Profile editing.
-o	Directory of product categories                       
-??? (separate table OR choose from ENUM)
-o	Directory of trading points.
++   Directory of product categories                  
++	Directory of trading points.
 o	View a list of products by categories. Search and filtering.
 o	Ability to add/edit/delete a product.
 o	Ability to link the price to a specific product in a store at the current moment.
