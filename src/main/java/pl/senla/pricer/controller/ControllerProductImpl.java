@@ -30,83 +30,9 @@ public class ControllerProductImpl implements ControllerProduct {
                     .toList();
         }
         String name = requestParams.get("name");
-//        String sort = requestParams.get("sort");
-//        String categoryName = requestParams.get("category");
-//        boolean isCategorySelected = categoryName != null;
         if (name != null) {
             return Collections.singletonList(ProductDtoConverter.convertProductToDto(serviceProduct.readByName(name)));
         }
-
-        //        if (sort == null) {
-//            if (isCategorySelected) {
-//                products = serviceProduct.readAll().stream()
-//                        .filter(p -> p.getCategory().getName().equals(categoryName))
-//                        .map(ProductDtoConverter::convertProductToDto)
-//                        .toList();
-//            } else {
-//                products = serviceProduct.readAll().stream()
-//                        .map(ProductDtoConverter::convertProductToDto)
-//                        .toList();
-//            }
-//        } else {
-//            switch (sort) {
-//                case "name":
-//                    if (isCategorySelected) {
-//                        products = serviceProduct.readAllByOrderByName().stream()
-//                                .filter(p -> p.getCategory().getName().equals(categoryName))
-//                                .map(ProductDtoConverter::convertProductToDto)
-//                                .toList();
-//                    } else {
-//                        products = serviceProduct.readAllByOrderByName().stream()
-//                                .map(ProductDtoConverter::convertProductToDto)
-//                                .toList();
-//                    }
-//                    break;
-//                case "category":
-//                    if (isCategorySelected) {
-//                        products = serviceProduct.readAllByOrderByCategory().stream()
-//                                .filter(p -> p.getCategory().getName().equals(categoryName))
-//                                .map(ProductDtoConverter::convertProductToDto)
-//                                .toList();
-//                    } else {
-//                        products = serviceProduct.readAllByOrderByCategory().stream()
-//                                .map(ProductDtoConverter::convertProductToDto)
-//                                .toList();
-//                    }
-//                    break;
-//                default:
-//                    if (isCategorySelected) {
-//                        products = serviceProduct.readAll().stream()
-//                                .filter(p -> p.getCategory().getName().equals(categoryName))
-//                                .map(ProductDtoConverter::convertProductToDto)
-//                                .toList();
-//                    } else {
-//                        products = serviceProduct.readAll().stream()
-//                                .map(ProductDtoConverter::convertProductToDto)
-//                                .toList();
-//                    }
-//
-//            }
-//        }
-//        if (categoryName != null) {
-//            if (sort == null) {
-//                products = serviceProduct.readAll().stream()
-//                        .filter(p -> p.getCategory().getName().equals(categoryName))
-//                        .map(ProductDtoConverter::convertProductToDto)
-//                        .toList();
-//            }
-//            if (sort.equals("name")) {
-//                products = serviceProduct.readAllByOrderByName().stream()
-//                        .filter(p -> p.getCategory().getName().equals(categoryName))
-//                        .map(ProductDtoConverter::convertProductToDto)
-//                        .toList();
-//            }
-//        } else {
-//
-//            products = serviceProduct.readAllByOrderByName().stream()
-//                    .map(ProductDtoConverter::convertProductToDto)
-//                    .toList();
-//        }
         return getListWithParameters(requestParams);
     }
 
@@ -163,7 +89,6 @@ public class ControllerProductImpl implements ControllerProduct {
                                 .map(ProductDtoConverter::convertProductToDto)
                                 .toList();
                     }
-
             }
         }
         return products;
