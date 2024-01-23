@@ -76,9 +76,10 @@ public class ServiceShopImpl implements ServiceShop {
         log.debug("Start ServiceShop 'Delete by ID'");
         if (!daoShop.existsById(id)) {
             log.debug(String.valueOf(new ShopByIdNotFoundException(id)));
+        } else {
+            log.debug("Shop was deleted");
+            daoShop.deleteById(id);
         }
-        log.debug("Shop was deleted");
-        daoShop.deleteById(id);
     }
 
     @Override

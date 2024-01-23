@@ -69,9 +69,10 @@ public class ServiceCategoryImpl implements ServiceCategory{
         log.debug("Start ServiceCategory 'Delete by ID'");
         if (!daoCategory.existsById(id)) {
             log.debug(String.valueOf(new CategoryByIdNotFoundException(id)));
+        } else {
+            log.debug("ServiceCategory deleted Category");
+            daoCategory.deleteById(id);
         }
-        log.debug("ServiceCategory deleted Category");
-        daoCategory.deleteById(id);
     }
 
     @Override

@@ -8,11 +8,10 @@ o	User registration (administrators, regular users).
 o	Profile editing.
 +   Directory of product categories                  
 +	Directory of trading points.
-o	View a list of products by categories. Search and filtering.
-o	Ability to add/edit/delete a product.
++	View a list of products by categories. Search and filtering.
++	Ability to add/edit/delete a product.
 o	Ability to link the price to a specific product in a store at the current moment.
-o	Ability to track price dynamics for a specific product in a given period.     
-??? (use average price in all shops on date)
+o	Ability to track price dynamics for a specific product in a given period.
 o	Price comparison for items in different stores (at least two).
 o	Ability to graphically display price change dynamics.
     (returning an array of points in the response body of the REST method will be sufficient for graph construction)

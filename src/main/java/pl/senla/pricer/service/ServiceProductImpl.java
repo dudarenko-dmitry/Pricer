@@ -101,9 +101,10 @@ public class ServiceProductImpl implements ServiceProduct {
         log.debug("Start ServiceProduct 'Delete by ID'");
         if (!daoProduct.existsById(id)) {
             log.info("Product with id {} not found", id);
+        } else {
+            log.debug("Product was deleted");
+            daoProduct.deleteById(id);
         }
-        log.debug("Product was deleted");
-        daoProduct.deleteById(id);
     }
 
 }

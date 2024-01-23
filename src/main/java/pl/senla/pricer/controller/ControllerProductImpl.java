@@ -23,7 +23,6 @@ public class ControllerProductImpl implements ControllerProduct {
     @GetMapping
     public List<ProductDto> readAll(@RequestParam Map<String, String> requestParams) {
         log.debug("ControllerProduct 'ReadAll'");
-
         if (requestParams.isEmpty()) {
             return serviceProduct.readAll().stream()
                     .map(ProductDtoConverter::convertProductToDto)
@@ -34,6 +33,34 @@ public class ControllerProductImpl implements ControllerProduct {
             return Collections.singletonList(ProductDtoConverter.convertProductToDto(serviceProduct.readByName(name)));
         }
         return getListWithParameters(requestParams);
+    }
+
+    @Override
+    @PostMapping("/")
+    public ProductDto create(@RequestBody ProductDto productDto) {
+        log.debug("ControllerProduct 'Create'");
+        return ProductDtoConverter.convertProductToDto(serviceProduct.create(productDto));
+    }
+
+    @Override
+    @GetMapping("/{id}")
+    public ProductDto read(@PathVariable Long id) {
+        log.debug("ControllerProduct 'Read'");
+        return ProductDtoConverter.convertProductToDto(serviceProduct.read(id));
+    }
+
+    @Override
+    @PutMapping("/{id}")
+    public ProductDto update(@PathVariable Long id, @RequestBody ProductDto productDto) {
+        log.debug("ControllerProduct 'Update'");
+        return ProductDtoConverter.convertProductToDto(serviceProduct.update(id, productDto));
+    }
+
+    @Override
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        log.debug("ControllerProduct 'Delete'");
+        serviceProduct.delete(id);
     }
 
     private List<ProductDto> getListWithParameters(Map<String, String> requestParams) {
@@ -94,31 +121,4 @@ public class ControllerProductImpl implements ControllerProduct {
         return products;
     }
 
-    @Override
-    @PostMapping("/")
-    public ProductDto create(@RequestBody ProductDto productDto) {
-        log.debug("ControllerProduct 'Create'");
-        return ProductDtoConverter.convertProductToDto(serviceProduct.create(productDto));
-    }
-
-    @Override
-    @GetMapping("/{id}")
-    public ProductDto read(@PathVariable Long id) {
-        log.debug("ControllerProduct 'Read'");
-        return ProductDtoConverter.convertProductToDto(serviceProduct.read(id));
-    }
-
-    @Override
-    @PutMapping("/{id}")
-    public ProductDto update(@PathVariable Long id, @RequestBody ProductDto productDto) {
-        log.debug("ControllerProduct 'Update'");
-        return ProductDtoConverter.convertProductToDto(serviceProduct.update(id, productDto));
-    }
-
-    @Override
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        log.debug("ControllerProduct 'Delete'");
-        serviceProduct.delete(id);
-    }
 }
