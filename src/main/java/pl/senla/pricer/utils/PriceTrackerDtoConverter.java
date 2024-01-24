@@ -12,8 +12,8 @@ public final class PriceTrackerDtoConverter {
 
     public static PriceTrackingDto convertToDto(PriceTracking priceTracking) {
         return PriceTrackingDto.builder()
-                .productId(priceTracking.getProduct().getId())
-                .shopId(priceTracking.getShop().getId())
+                .productName(priceTracking.getProduct().getName())
+                .address(priceTracking.getShop().getAddress())
                 .price(priceTracking.getPrice())
                 .dateString(convertDateToString(priceTracking.getDate()))
                 .build();

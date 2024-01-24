@@ -7,6 +7,7 @@ import pl.senla.pricer.dto.PriceTrackingDto;
 import pl.senla.pricer.service.ServicePriceTracking;
 import pl.senla.pricer.utils.PriceTrackerDtoConverter;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -60,4 +61,16 @@ public class ControllerPriceTrackingImpl implements ControllerPriceTracking {
         servicePriceTracking.delete(id);
     }
 
+    @Override
+    @GetMapping("/dynamic")
+    public Map<LocalDate, Integer> getPriceDynamic(@RequestParam Map<String, String> requestParams) {
+        log.debug("ControllerProduct 'getPriceDynamic'");
+        if (requestParams.isEmpty()) {
+            log.warn("Not enough parameters in get-request for this method.");
+            return null;
+        }
+        String productName = requestParams.get("product_name");
+        log.info("Price dynamic for {}:", productName);
+        return servicePriceTracking.getPriceDynamic(requestParams);
+    }
 }

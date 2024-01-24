@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PriceTrackingDto {
 
-    private Long productId;
-    private Long shopId;
+    private String productName;
+    private String address;
     private Integer price;
     private String dateString;
 

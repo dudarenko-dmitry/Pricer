@@ -11,15 +11,14 @@ import pl.senla.pricer.entity.PriceTracking;
 import pl.senla.pricer.entity.Product;
 import pl.senla.pricer.entity.Shop;
 import pl.senla.pricer.exception.PriceNotFoundException;
+import pl.senla.pricer.exception.PriceTrackingNotFoundException;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
-public class ServicePriceTrackingImpl implements ServicePriceTracking{
+public class ServicePriceTrackingImpl implements ServicePriceTracking {
 
     @Autowired
     private DaoPriceTracking daoPriceTracking;
@@ -42,24 +41,33 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking{
     public List<PriceTracking> readAllWithParams(Map<String, String> requestParams) {
         log.debug("Start ServiceProduct 'ReadAllWithParams'");
         String sort = requestParams.get("sort");
-        String productId = requestParams.get("product_id");
-        String shopId1 = requestParams.get("shop_id1");
-        String shopId2 = requestParams.get("shop_id2");
+        String productName = requestParams.get("product_name");
+        String shopAddress1 = requestParams.get("shop_address1");
+        String shopAddress2 = requestParams.get("shop_address2");
         String registrationDateString = requestParams.get("registration_date");
-        String startDateString = requestParams.get("start_date");
-        String endDateString = requestParams.get("end_date");
 
         List<PriceTracking> prices = daoPriceTracking.findAll();
         if (prices.isEmpty()) {
             log.info("List of Prices is empty");
         } else if (sort == null &&
-                productId != null &&
-                shopId1 != null &&
-                shopId2 == null &&
-                registrationDateString != null &&
-                startDateString == null &&
-                endDateString == null) {
-            prices = daoPriceTracking.findPriceForProductShopDate(Long.parseLong(productId), Long.parseLong(shopId1), registrationDateString);
+                productName != null &&
+                shopAddress1 != null &&
+                shopAddress2 == null &&
+                registrationDateString != null) {
+            Long productId = daoProduct.findByName(productName).getId();
+            Long shopId1 = daoShop.findByAddress(shopAddress1).getId();
+            prices = daoPriceTracking
+                    .findPriceForProductShopDate(productId, registrationDateString, shopId1);
+        } else if (sort == null &&
+                productName != null &&
+                shopAddress1 != null &&
+                shopAddress2 != null &&
+                registrationDateString != null) {
+            Long productId = daoProduct.findByName(productName).getId();
+            Long shopId1 = daoShop.findByAddress(shopAddress1).getId();
+            Long shopId2 = daoShop.findByAddress(shopAddress2).getId();
+            prices = daoPriceTracking
+                    .findPricesForProductIn2ShopsAtDate(productId, registrationDateString, shopId1, shopId2);
         }
         return prices;
     }
@@ -67,22 +75,22 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking{
     @Override
     public PriceTracking create(PriceTrackingDto priceTrackingDto) {
         log.debug("Start ServiceProduct 'Create'");
-        Long productId = priceTrackingDto.getProductId();
-        Long shopId = priceTrackingDto.getShopId();
+        String productName = priceTrackingDto.getProductName();
+        String address = priceTrackingDto.getAddress();
         String dateString = priceTrackingDto.getDateString();
         LocalDate registration_date = convertStringToDate(dateString);
         boolean isPresentPriceTracking = readAll().stream()
-                .anyMatch(p -> p.getProduct().getId().equals(productId) &&
-                        p.getShop().getId().equals(shopId) &&
+                .anyMatch(p -> p.getProduct().getName().equals(productName) &&
+                        p.getShop().getAddress().equals(address) &&
                         p.getDate().equals(registration_date));
         if (!isPresentPriceTracking) {
-            Optional<Product> product = daoProduct.findById(productId);
-            Optional<Shop> shop = daoShop.findById(shopId);
-            if (product.isPresent() && shop.isPresent()) {
+            Product product = daoProduct.findByName(productName);
+            Shop shop = daoShop.findByAddress(address);
+            if (product != null && shop != null) {
                 PriceTracking priceTracking = PriceTracking.builder()
                         .id(null)
-                        .product(product.get())
-                        .shop(shop.get())
+                        .product(product)
+                        .shop(shop)
                         .price(priceTrackingDto.getPrice())
                         .date(registration_date)
                         .build();
@@ -104,23 +112,23 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking{
     public PriceTracking update(Long id, PriceTrackingDto priceTrackingDto) {
         log.debug("Start ServiceProduct 'Update'");
         if (daoPriceTracking.findById(id).isPresent()) {
-            Long productId = priceTrackingDto.getProductId();
-            Long shopId = priceTrackingDto.getShopId();
+            String productName = priceTrackingDto.getProductName();
+            String address = priceTrackingDto.getAddress();
             String dateString = priceTrackingDto.getDateString();
             LocalDate registration_date = convertStringToDate(dateString);
             boolean isPresentPriceTracking = readAll().stream()
-                    .anyMatch(p -> p.getProduct().getId().equals(productId) &&
-                            p.getShop().getId().equals(shopId) &&
+                    .anyMatch(p -> p.getProduct().getName().equals(productName) &&
+                            p.getShop().getAddress().equals(address) &&
                             p.getDate().equals(registration_date));
 
             if (!isPresentPriceTracking) {
-                Optional<Product> product = daoProduct.findById(productId);
-                Optional<Shop> shop = daoShop.findById(shopId);
-                if (product.isPresent() && shop.isPresent()) {
+                Product product = daoProduct.findByName(productName);
+                Shop shop = daoShop.findByAddress(address);
+                if (product != null && shop != null) {
                     PriceTracking priceTrackingNew = PriceTracking.builder()
                             .id(null)
-                            .product(product.get())
-                            .shop(shop.get())
+                            .product(product)
+                            .shop(shop)
                             .price(priceTrackingDto.getPrice())
                             .date(registration_date)
                             .build();
@@ -143,6 +151,45 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking{
         } else {
             log.debug("PriceTracking with ID {} not found.", id);
         }
+    }
+
+    @Override
+    public Map<LocalDate, Integer> getPriceDynamic(Map<String, String> requestParams) {
+        log.debug("Start ServiceProduct 'GetPriceDynamic'");
+        String productName = requestParams.get("product_name");
+        String startDateString = requestParams.get("start_date");
+        String endDateString = requestParams.get("end_date");
+
+        List<PriceTracking> prices = daoPriceTracking.findAll();
+        if (prices.isEmpty()) {
+            log.info("List of Prices is empty");
+        } else if (
+                productName != null &&
+                startDateString != null &&
+                endDateString != null) {
+            Long productId = daoProduct.findByName(productName).getId();
+            List<PriceTracking> pricesForProductInPeriod = daoPriceTracking
+                    .findPricesForProductInPeriod(productId, startDateString, endDateString);
+            return findMinPrices(pricesForProductInPeriod);
+        }
+        return null;
+    }
+
+    private Map<LocalDate, Integer> findMinPrices(List<PriceTracking> pricesForProductInPeriod) {
+        List<LocalDate> dates = pricesForProductInPeriod.stream()
+                .map(PriceTracking::getDate)
+                .distinct()
+                .toList();
+        Map<LocalDate, Integer> minPrices = new TreeMap<>();
+        for (LocalDate date : dates) {
+            Integer price = pricesForProductInPeriod.stream()
+                    .filter(pt -> pt.getDate().isEqual(date))
+                    .map(PriceTracking::getPrice)
+                    .min(Comparator.comparingInt(p -> p))
+                    .orElseThrow(() -> new PriceTrackingNotFoundException(date));
+            minPrices.put(date, price);
+        }
+        return minPrices;
     }
 
     private LocalDate convertStringToDate(String dateString) {
