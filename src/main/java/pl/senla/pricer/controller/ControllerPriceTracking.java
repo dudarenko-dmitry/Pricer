@@ -1,6 +1,7 @@
 package pl.senla.pricer.controller;
 
 import org.springframework.web.bind.annotation.RequestParam;
+import pl.senla.pricer.controller.rest.ControllerCRUDAll;
 import pl.senla.pricer.dto.PriceTrackingDto;
 
 import java.time.LocalDate;

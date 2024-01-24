@@ -10,7 +10,9 @@ import pl.senla.pricer.entity.Category;
 import pl.senla.pricer.exception.CategoryByIdNotFoundException;
 import pl.senla.pricer.utils.CategoryDtoConverter;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -20,15 +22,32 @@ public class ServiceCategoryImpl implements ServiceCategory{
     private DaoCategory daoCategory;
 
     @Override
-    public List<Category> readAll() {
+    public List<Category> readAll(Map<String, String> requestParams) {
         log.debug("Start ServiceCategory 'ReadAll'");
         List<Category> categories = daoCategory.findAll();
         if (categories.isEmpty()) {
             log.debug("List of Categories is empty");
+        }
+
+        if (requestParams.isEmpty()) {
             return categories;
         }
-        log.debug("ServiceCategory 'ReadAll' returns List of Categories");
-        return categories;
+        String sort = requestParams.get("sort");
+        String name = requestParams.get("name");
+        log.info("Categories sorted by {} or filtered by name {}", sort, name);
+        if (name != null) {
+            return Collections.singletonList(daoCategory.findByName(name));
+        } else {
+            switch (sort) {
+                case "id" -> {
+                    return categories;
+                }
+                case "name" -> {
+                    return daoCategory.findAllByOrderByName();
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + sort);
+            }
+        }
     }
 
     @Override
@@ -37,7 +56,7 @@ public class ServiceCategoryImpl implements ServiceCategory{
         log.debug("Start ServiceCategory 'Create'");
         String name = categoryDto.getName();
         if (daoCategory.findByName(name) == null) {
-            return CategoryDtoConverter.convertDtoToCategory(categoryDto);
+            return daoCategory.save(CategoryDtoConverter.convertDtoToCategory(categoryDto));
         }
         log.debug("ServiceCategory: Category is already exist");
         return null;
@@ -60,7 +79,8 @@ public class ServiceCategoryImpl implements ServiceCategory{
             log.debug("ServiceCategory Updated Category");
             return daoCategory.save(newCategory);
         }
-        throw new CategoryByIdNotFoundException(id);
+        log.debug(String.valueOf(new CategoryByIdNotFoundException(id)));
+        return null;
     }
 
     @Override

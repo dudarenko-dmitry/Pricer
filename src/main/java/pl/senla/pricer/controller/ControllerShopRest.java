@@ -25,7 +25,7 @@ public class ControllerShopRest implements ControllerShop {
     public List<ShopDto> readAll(@RequestParam Map<String,String> requestParams) {
         log.debug("ControllerShop 'ReadAll'");
         if(requestParams.isEmpty()) {
-            return  serviceShop.readAll().stream()
+            return  serviceShop.readAll(requestParams).stream()
                     .map(ShopDtoConverter::convertShopToDto)
                     .toList();
         }
@@ -49,7 +49,7 @@ public class ControllerShopRest implements ControllerShop {
                 return Collections.singletonList(ShopDtoConverter.convertShopToDto(serviceShop.readByAddress(address)));
             }
             switch (sort) {
-                case "id" -> {return serviceShop.readAll().stream()
+                case "id" -> {return serviceShop.readAll(requestParams).stream()
                         .map(ShopDtoConverter::convertShopToDto)
                         .toList();}
                 case "name" -> {return serviceShop.readAllSortByName().stream()

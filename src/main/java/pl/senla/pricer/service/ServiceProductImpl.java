@@ -10,6 +10,7 @@ import pl.senla.pricer.entity.Product;
 import pl.senla.pricer.exception.ProductByIdNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -23,7 +24,7 @@ public class ServiceProductImpl implements ServiceProduct {
     private DaoCategory daoCategory;
 
     @Override
-    public List<Product> readAll() {
+    public List<Product> readAll(Map<String, String> requestParams) {
         log.debug("Start ServiceProduct 'ReadAll'");
         List<Product> products = daoProduct.findAll();
         if (products.isEmpty()) {

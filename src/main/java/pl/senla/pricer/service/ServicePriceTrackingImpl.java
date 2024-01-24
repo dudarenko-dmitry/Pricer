@@ -28,46 +28,40 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking {
     private DaoShop daoShop;
 
     @Override
-    public List<PriceTracking> readAll() {
+    public List<PriceTracking> readAll(Map<String, String> requestParams) {
         log.debug("Start ServiceProduct 'ReadAll'");
         List<PriceTracking> prices = daoPriceTracking.findAll();
         if (prices.isEmpty()) {
             log.info("List of Prices is empty");
+            return prices;
         }
-        return prices;
-    }
 
-    @Override
-    public List<PriceTracking> readAllWithParams(Map<String, String> requestParams) {
-        log.debug("Start ServiceProduct 'ReadAllWithParams'");
-        String sort = requestParams.get("sort");
-        String productName = requestParams.get("product_name");
-        String shopAddress1 = requestParams.get("shop_address1");
-        String shopAddress2 = requestParams.get("shop_address2");
-        String registrationDateString = requestParams.get("registration_date");
-
-        List<PriceTracking> prices = daoPriceTracking.findAll();
-        if (prices.isEmpty()) {
-            log.info("List of Prices is empty");
-        } else if (sort == null &&
-                productName != null &&
-                shopAddress1 != null &&
-                shopAddress2 == null &&
-                registrationDateString != null) {
-            Long productId = daoProduct.findByName(productName).getId();
-            Long shopId1 = daoShop.findByAddress(shopAddress1).getId();
-            prices = daoPriceTracking
-                    .findPriceForProductShopDate(productId, registrationDateString, shopId1);
-        } else if (sort == null &&
-                productName != null &&
-                shopAddress1 != null &&
-                shopAddress2 != null &&
-                registrationDateString != null) {
-            Long productId = daoProduct.findByName(productName).getId();
-            Long shopId1 = daoShop.findByAddress(shopAddress1).getId();
-            Long shopId2 = daoShop.findByAddress(shopAddress2).getId();
-            prices = daoPriceTracking
-                    .findPricesForProductIn2ShopsAtDate(productId, registrationDateString, shopId1, shopId2);
+        if (requestParams.isEmpty()) {
+            return prices;
+        } else {
+            log.debug("Start ServiceProduct 'ReadAll With Params'");
+            String productName = requestParams.get("product_name");
+            String shopAddress1 = requestParams.get("shop_address1");
+            String shopAddress2 = requestParams.get("shop_address2");
+            String registrationDateString = requestParams.get("registration_date");
+            if (productName != null &&
+                    shopAddress1 != null &&
+                    shopAddress2 == null &&
+                    registrationDateString != null) {
+                Long productId = daoProduct.findByName(productName).getId();
+                Long shopId1 = daoShop.findByAddress(shopAddress1).getId();
+                prices = daoPriceTracking
+                        .findPriceForProductShopDate(productId, registrationDateString, shopId1);
+            } else if (productName != null &&
+                    shopAddress1 != null &&
+                    shopAddress2 != null &&
+                    registrationDateString != null) {
+                Long productId = daoProduct.findByName(productName).getId();
+                Long shopId1 = daoShop.findByAddress(shopAddress1).getId();
+                Long shopId2 = daoShop.findByAddress(shopAddress2).getId();
+                prices = daoPriceTracking
+                        .findPricesForProductIn2ShopsAtDate(productId, registrationDateString, shopId1, shopId2);
+            }
         }
         return prices;
     }
@@ -79,7 +73,7 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking {
         String address = priceTrackingDto.getAddress();
         String dateString = priceTrackingDto.getDateString();
         LocalDate registration_date = convertStringToDate(dateString);
-        boolean isPresentPriceTracking = readAll().stream()
+        boolean isPresentPriceTracking = readAll(null).stream()
                 .anyMatch(p -> p.getProduct().getName().equals(productName) &&
                         p.getShop().getAddress().equals(address) &&
                         p.getDate().equals(registration_date));
@@ -116,7 +110,7 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking {
             String address = priceTrackingDto.getAddress();
             String dateString = priceTrackingDto.getDateString();
             LocalDate registration_date = convertStringToDate(dateString);
-            boolean isPresentPriceTracking = readAll().stream()
+            boolean isPresentPriceTracking = readAll(null).stream()
                     .anyMatch(p -> p.getProduct().getName().equals(productName) &&
                             p.getShop().getAddress().equals(address) &&
                             p.getDate().equals(registration_date));

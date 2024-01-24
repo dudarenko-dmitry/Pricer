@@ -24,13 +24,11 @@ public class ControllerPriceTrackingImpl implements ControllerPriceTracking {
     public List<PriceTrackingDto> readAll(@RequestParam Map<String, String> requestParams) {
         log.debug("ControllerProduct 'ReadAll'");
         if (requestParams.isEmpty()) {
-            return servicePriceTracking.readAll().stream()
+            return servicePriceTracking.readAll(requestParams).stream()
                     .map(PriceTrackerDtoConverter::convertToDto)
                     .toList();
         }
-        return servicePriceTracking.readAllWithParams(requestParams).stream()
-                .map(PriceTrackerDtoConverter::convertToDto)
-                .toList();
+        return null; // ????????????????????
     }
 
     @Override

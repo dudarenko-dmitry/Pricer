@@ -24,7 +24,7 @@ public class ControllerProductImpl implements ControllerProduct {
     public List<ProductDto> readAll(@RequestParam Map<String, String> requestParams) {
         log.debug("ControllerProduct 'ReadAll'");
         if (requestParams.isEmpty()) {
-            return serviceProduct.readAll().stream()
+            return serviceProduct.readAll(requestParams).stream()
                     .map(ProductDtoConverter::convertProductToDto)
                     .toList();
         }
@@ -70,12 +70,12 @@ public class ControllerProductImpl implements ControllerProduct {
         List<ProductDto> products;
         if (sort == null) {
             if (isCategorySelected) {
-                products = serviceProduct.readAll().stream()
+                products = serviceProduct.readAll(requestParams).stream()
                         .filter(p -> p.getCategory().getName().equals(categoryName))
                         .map(ProductDtoConverter::convertProductToDto)
                         .toList();
             } else {
-                products = serviceProduct.readAll().stream()
+                products = serviceProduct.readAll(requestParams).stream()
                         .map(ProductDtoConverter::convertProductToDto)
                         .toList();
             }
@@ -107,12 +107,12 @@ public class ControllerProductImpl implements ControllerProduct {
                     break;
                 default:
                     if (isCategorySelected) {
-                        products = serviceProduct.readAll().stream()
+                        products = serviceProduct.readAll(requestParams).stream()
                                 .filter(p -> p.getCategory().getName().equals(categoryName))
                                 .map(ProductDtoConverter::convertProductToDto)
                                 .toList();
                     } else {
-                        products = serviceProduct.readAll().stream()
+                        products = serviceProduct.readAll(requestParams).stream()
                                 .map(ProductDtoConverter::convertProductToDto)
                                 .toList();
                     }

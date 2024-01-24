@@ -9,7 +9,6 @@ import java.util.Map;
 
 public interface ServicePriceTracking extends ServiceCRUDAll<PriceTracking, PriceTrackingDto> {
 
-    List<PriceTracking> readAllWithParams(Map<String, String> requestParams);
     Map<LocalDate, Integer> getPriceDynamic(Map<String, String> requestParams);
 
 }

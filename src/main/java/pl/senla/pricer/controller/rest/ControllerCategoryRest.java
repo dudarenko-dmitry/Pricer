@@ -1,4 +1,4 @@
-package pl.senla.pricer.controller;
+package pl.senla.pricer.controller.rest;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/categories")
 @Slf4j
-public class ControllerCategoryRest implements ControllerCategory{
+public class ControllerCategoryRest implements ControllerCategory {
 
     @Autowired
     private ServiceCategory serviceCategory;
@@ -24,7 +24,7 @@ public class ControllerCategoryRest implements ControllerCategory{
     public List<CategoryDto> readAll(@RequestParam Map<String,String> requestParams) {
         log.debug("ControllerCategory 'ReadAll'");
         if(requestParams.isEmpty()) {
-            return serviceCategory.readAll().stream()
+            return serviceCategory.readAll(requestParams).stream()
                     .map(CategoryDtoConverter::convertCategoryToDto)
                     .toList();
         }
@@ -36,7 +36,7 @@ public class ControllerCategoryRest implements ControllerCategory{
         } else {
             switch(sort) {
                 case "id" -> {
-                    return serviceCategory.readAll().stream()
+                    return serviceCategory.readAll(requestParams).stream()
                             .map(CategoryDtoConverter::convertCategoryToDto)
                             .toList();
                 }

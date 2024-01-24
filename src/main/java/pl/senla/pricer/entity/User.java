@@ -33,4 +33,8 @@ public class User implements Serializable {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @OneToOne
+    @JoinColumn(name = "user_profile_id")
+    private UserProfile userProfile;
+
 }

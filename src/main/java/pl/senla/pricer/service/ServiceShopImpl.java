@@ -10,6 +10,7 @@ import pl.senla.pricer.exception.ShopByIdNotFoundException;
 import pl.senla.pricer.utils.ShopDtoConverter;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -19,7 +20,7 @@ public class ServiceShopImpl implements ServiceShop {
     private DaoShop daoShop;
 
     @Override
-    public List<Shop> readAll() {
+    public List<Shop> readAll(Map<String, String> requestParams) {
         log.debug("Start ServiceShop 'ReadAll'");
         List<Shop> shops = daoShop.findAll();
         if (shops.isEmpty()) {

@@ -1,4 +1,4 @@
-package pl.senla.pricer.controller;
+package pl.senla.pricer.controller.rest;
 
 import java.util.List;
 import java.util.Map;
