@@ -3,12 +3,14 @@ package pl.senla.pricer.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import pl.senla.pricer.dao.DaoShop;
 import pl.senla.pricer.dto.ShopDto;
 import pl.senla.pricer.entity.Shop;
 import pl.senla.pricer.exception.ShopByIdNotFoundException;
 import pl.senla.pricer.utils.ShopDtoConverter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +29,33 @@ public class ServiceShopImpl implements ServiceShop {
             log.info("List of Shops is empty");
             return shops;
         }
-        log.debug("ServiceShop 'ReadAll' returns List of Shops");
-        return shops;
+        if(requestParams.isEmpty()) {
+            return  shops;
+        }
+        String sort = requestParams.get("sort");
+        String name = requestParams.get("name");
+        String address = requestParams.get("address");
+        log.info("Shops sorted by {} or filtered by name {} / address {}", sort, name, address);
+        if(name != null) {
+            if(address != null) {
+                return daoShop.findAllByName(name).stream()
+                        .filter(s -> s.getAddress().equals(address))
+                        .toList();
+            }
+            return daoShop.findAllByName(name);
+        } else {
+            if(address != null) {
+                return Collections.singletonList(daoShop.findByAddress(address));
+            }
+            switch (sort) {
+                case "id" -> {return shops;}
+                case "name" -> {return daoShop.findAllByOrderByName();}
+                default -> {
+                    log.warn("Please check your input.");
+                    return null;
+                }
+            }
+        }
     }
 
     @Override
@@ -83,7 +110,7 @@ public class ServiceShopImpl implements ServiceShop {
         }
     }
 
-    @Override
+    @Override // remove ???
     public List<Shop> readAllSortByName() {
         log.debug("Start ServiceShop 'readAllSortByName'");
         List<Shop> shops = daoShop.findAllByOrderByName();
@@ -95,7 +122,7 @@ public class ServiceShopImpl implements ServiceShop {
         return shops;
     }
 
-    @Override
+    @Override // remove ???
     public List<Shop> readAllByName(String name) {
         log.debug("Start ServiceShop 'readAllByName'");
         List<Shop> shops = daoShop.findAllByName(name);

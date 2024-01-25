@@ -32,7 +32,7 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
                     .toList();
             return new ResponseEntity<>(list.toString(), HttpStatus.OK);
         } catch (CategoryByIdNotFoundException e) {
-            return new ResponseEntity<>("Error in reading", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Could not read Categories' list", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -44,6 +44,7 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
             CategoryDto category = CategoryDtoConverter.convertCategoryToDto(serviceCategory.create(categoryDto));
             return new ResponseEntity<>(category.toString(), HttpStatus.CREATED);
         } catch (CategoryNotCreatedException e) {
+            log.debug(e.toString());
             return new ResponseEntity<>("Category not created", HttpStatus.FORBIDDEN);
         }
     }

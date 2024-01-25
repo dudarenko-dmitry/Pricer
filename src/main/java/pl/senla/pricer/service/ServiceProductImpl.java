@@ -9,6 +9,7 @@ import pl.senla.pricer.dto.ProductDto;
 import pl.senla.pricer.entity.Product;
 import pl.senla.pricer.exception.ProductByIdNotFoundException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,27 +31,14 @@ public class ServiceProductImpl implements ServiceProduct {
         if (products.isEmpty()) {
             log.info("List of Products is empty");
         }
-        return products;
-    }
-
-    @Override
-    public List<Product> readAllByOrderByName() {
-        log.debug("Start ServiceProduct 'ReadAll'");
-        List<Product> products = daoProduct.findAllByOrderByName();
-        if (products.isEmpty()) {
-            log.info("List of Products is empty");
+        if (requestParams.isEmpty()) {
+            return products;
         }
-        return products;
-    }
-
-    @Override
-    public List<Product> readAllByOrderByCategory() {
-        log.debug("Start ServiceProduct 'ReadAll'");
-        List<Product> products = daoProduct.findAllByOrderByCategory();
-        if (products.isEmpty()) {
-            log.info("List of Products is empty");
+        String name = requestParams.get("name");
+        if (name != null) {
+            return Collections.singletonList(daoProduct.findByName(name));
         }
-        return products;
+        return getListWithParameters(requestParams);
     }
 
     @Override
@@ -108,4 +96,70 @@ public class ServiceProductImpl implements ServiceProduct {
         }
     }
 
+    private List<Product> getListWithParameters(Map<String, String> requestParams) {
+        String sort = requestParams.get("sort");
+        String categoryName = requestParams.get("category");
+        boolean isCategorySelected = categoryName != null;
+        List<Product> products;
+        if (sort == null) {
+            if (isCategorySelected) {
+                products = daoProduct.findAll().stream()
+                        .filter(p -> p.getCategory().getName().equals(categoryName))
+                        .toList();
+            } else {
+                products = daoProduct.findAll();
+            }
+        } else {
+            switch (sort) {
+                case "name":
+                    if (isCategorySelected) {
+                        products = daoProduct.findAllByOrderByName().stream()
+                                .filter(p -> p.getCategory().getName().equals(categoryName))
+                                .toList();
+                    } else {
+                        products = daoProduct.findAllByOrderByName().stream()
+                                .toList();
+                    }
+                    break;
+                case "category":
+                    if (isCategorySelected) {
+                        products = daoProduct.findAllByOrderByCategory().stream()
+                                .filter(p -> p.getCategory().getName().equals(categoryName))
+                                .toList();
+                    } else {
+                        products = daoProduct.findAllByOrderByCategory();
+                    }
+                    break;
+                default:
+                    if (isCategorySelected) {
+                        products = daoProduct.findAll().stream()
+                                .filter(p -> p.getCategory().getName().equals(categoryName))
+                                .toList();
+                    } else {
+                        products = daoProduct.findAll();
+                    }
+            }
+        }
+        return products;
+    }
+
+    @Override // remove ???
+    public List<Product> readAllByOrderByName() {
+        log.debug("Start ServiceProduct 'ReadAll'");
+        List<Product> products = daoProduct.findAllByOrderByName();
+        if (products.isEmpty()) {
+            log.info("List of Products is empty");
+        }
+        return products;
+    }
+
+    @Override // remove ???
+    public List<Product> readAllByOrderByCategory() {
+        log.debug("Start ServiceProduct 'ReadAll'");
+        List<Product> products = daoProduct.findAllByOrderByCategory();
+        if (products.isEmpty()) {
+            log.info("List of Products is empty");
+        }
+        return products;
+    }
 }
