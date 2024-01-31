@@ -70,24 +70,23 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking {
     public PriceTracking create(PriceTrackingDto priceTrackingDto) {
         log.debug("Start ServiceProduct 'Create'");
         String productName = priceTrackingDto.getProductName();
+        Product product = daoProduct.findByName(productName);
         String address = priceTrackingDto.getAddress();
+        Shop shop = daoShop.findByAddress(address);
         String dateString = priceTrackingDto.getDateString();
         LocalDate registration_date = convertStringToDate(dateString);
-        boolean isPresentPriceTracking = readAll(null).stream()
-                .anyMatch(p -> p.getProduct().getName().equals(productName) &&
-                        p.getShop().getAddress().equals(address) &&
+        Map<String, String> requestParams = new HashMap<>();
+        boolean isPresentPriceTracking = readAll(requestParams).stream()
+                .anyMatch(p -> p.getProduct().equals(product) &&
+                        p.getShop().equals(shop) &&
                         p.getDate().equals(registration_date));
         if (!isPresentPriceTracking) {
-            Product product = daoProduct.findByName(productName);
-            Shop shop = daoShop.findByAddress(address);
             if (product != null && shop != null) {
-                PriceTracking priceTracking = PriceTracking.builder()
-                        .id(null)
-                        .product(product)
-                        .shop(shop)
-                        .price(priceTrackingDto.getPrice())
-                        .date(registration_date)
-                        .build();
+                PriceTracking priceTracking = new PriceTracking();
+                priceTracking.setProduct(product);
+                priceTracking.setShop(shop);
+                priceTracking.setPrice(priceTrackingDto.getPrice());
+                priceTracking.setDate(registration_date);
                 return daoPriceTracking.save(priceTracking);
             }
         }
@@ -107,29 +106,22 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking {
         log.debug("Start ServiceProduct 'Update'");
         if (daoPriceTracking.findById(id).isPresent()) {
             String productName = priceTrackingDto.getProductName();
+            Product product = daoProduct.findByName(productName);
             String address = priceTrackingDto.getAddress();
+            Shop shop = daoShop.findByAddress(address);
             String dateString = priceTrackingDto.getDateString();
             LocalDate registration_date = convertStringToDate(dateString);
-            boolean isPresentPriceTracking = readAll(null).stream()
-                    .anyMatch(p -> p.getProduct().getName().equals(productName) &&
-                            p.getShop().getAddress().equals(address) &&
-                            p.getDate().equals(registration_date));
-
-            if (!isPresentPriceTracking) {
-                Product product = daoProduct.findByName(productName);
-                Shop shop = daoShop.findByAddress(address);
-                if (product != null && shop != null) {
-                    PriceTracking priceTrackingNew = PriceTracking.builder()
-                            .id(null)
-                            .product(product)
-                            .shop(shop)
-                            .price(priceTrackingDto.getPrice())
-                            .date(registration_date)
-                            .build();
-                    return daoPriceTracking.save(priceTrackingNew);
-                }
+            if (product != null && shop != null) {
+                PriceTracking priceTrackingNew = PriceTracking.builder()
+                        .id(id)
+                        .product(product)
+                        .shop(shop)
+                        .price(priceTrackingDto.getPrice())
+                        .date(registration_date)
+                        .build();
+                return daoPriceTracking.save(priceTrackingNew);
             }
-            log.info("Such Price is already registered.");
+            log.warn("Product or Shop does not exist. Please, check input data.");
             return null;
         }
         log.info("Price not found.");
@@ -159,8 +151,8 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking {
             log.info("List of Prices is empty");
         } else if (
                 productName != null &&
-                startDateString != null &&
-                endDateString != null) {
+                        startDateString != null &&
+                        endDateString != null) {
             Long productId = daoProduct.findByName(productName).getId();
             List<PriceTracking> pricesForProductInPeriod = daoPriceTracking
                     .findPricesForProductInPeriod(productId, startDateString, endDateString);

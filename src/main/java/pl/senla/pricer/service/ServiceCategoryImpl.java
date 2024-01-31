@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import pl.senla.pricer.dao.DaoCategory;
 import pl.senla.pricer.dto.CategoryDto;
 import pl.senla.pricer.entity.Category;
-import pl.senla.pricer.exception.CategoryByIdNotFoundException;
+import pl.senla.pricer.exception.CategoryNotFoundException;
 import pl.senla.pricer.utils.CategoryDtoConverter;
 
 import java.util.Collections;
@@ -66,7 +66,7 @@ public class ServiceCategoryImpl implements ServiceCategory{
     public Category read(Long id) {
         log.debug("Start ServiceCategory 'Read by ID'");
         return daoCategory.findById(id)
-                .orElseThrow(() -> new CategoryByIdNotFoundException(id));
+                .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ServiceCategoryImpl implements ServiceCategory{
             log.debug("ServiceCategory Updated Category");
             return daoCategory.save(newCategory);
         }
-        log.debug(String.valueOf(new CategoryByIdNotFoundException(id)));
+        log.debug(String.valueOf(new CategoryNotFoundException(id)));
         return null;
     }
 
@@ -88,7 +88,7 @@ public class ServiceCategoryImpl implements ServiceCategory{
     public void delete(Long id) {
         log.debug("Start ServiceCategory 'Delete by ID'");
         if (!daoCategory.existsById(id)) {
-            log.debug(String.valueOf(new CategoryByIdNotFoundException(id)));
+            log.debug(String.valueOf(new CategoryNotFoundException(id)));
         } else {
             log.debug("ServiceCategory deleted Category");
             daoCategory.deleteById(id);

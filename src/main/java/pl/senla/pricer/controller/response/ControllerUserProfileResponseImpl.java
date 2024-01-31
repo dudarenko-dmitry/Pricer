@@ -31,9 +31,13 @@ public class ControllerUserProfileResponseImpl implements ControllerUserProfileR
             List<UserProfileDto> list = serviceUserProfile.readAll(requestParams).stream()
                     .map(UserProfileDtoConverter::convertProfileToDto)
                     .toList();
+            if (list.isEmpty()) {
+                return new ResponseEntity<>("list is empty", HttpStatus.NO_CONTENT);
+            }
             return new ResponseEntity<>(list.toString(), HttpStatus.OK);
-        } catch (UserProfileNotFoundException e) {
-            return new ResponseEntity<>("list is empty", HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -42,10 +46,16 @@ public class ControllerUserProfileResponseImpl implements ControllerUserProfileR
     public ResponseEntity<String> create(@RequestBody UserProfileDto userProfileDto) {
         log.debug("ControllerUserProfile 'Create'");
         try {
-            UserProfile userProfile = serviceUserProfile.create(userProfileDto);
-            return new ResponseEntity<>(userProfile.toString(), HttpStatus.CREATED);
-        } catch (UserProfileNotCreatedException e) {
-            return new ResponseEntity<>("UserProfile is already exists", HttpStatus.FORBIDDEN);
+            UserProfile userProfileNew = serviceUserProfile.create(userProfileDto);
+            if (userProfileNew != null) {
+                UserProfileDto userProfileDtoNew = UserProfileDtoConverter
+                        .convertProfileToDto(userProfileNew);
+                return new ResponseEntity<>(userProfileDtoNew.toString(), HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(new UserProfileNotCreatedException().toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -54,23 +64,34 @@ public class ControllerUserProfileResponseImpl implements ControllerUserProfileR
     public ResponseEntity<String> read(@PathVariable Long id) {
         log.debug("ControllerUserProfile 'Read'");
         try {
-            UserProfileDto userProfileDto = UserProfileDtoConverter.convertProfileToDto(serviceUserProfile.read(id));
-            return new ResponseEntity<>(userProfileDto.toString(), HttpStatus.OK);
-        } catch (UserProfileNotFoundException e) {
-            return new ResponseEntity<>("UserProfile not found", HttpStatus.NO_CONTENT);
+            UserProfile userProfile = serviceUserProfile.read(id);
+            if (userProfile != null) {
+                UserProfileDto userProfileDto = UserProfileDtoConverter
+                        .convertProfileToDto(userProfile);
+                return new ResponseEntity<>(userProfileDto.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new UserProfileNotFoundException(id).toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody UserProfileDto userProfileDto) {
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody UserProfileDto userProfile) {
         log.debug("ControllerUserProfile 'Update'");
         try {
-            UserProfileDto userProfileDtoUpdate = UserProfileDtoConverter
-                    .convertProfileToDto(serviceUserProfile.update(id, userProfileDto));
-            return new ResponseEntity<>(userProfileDto.toString(), HttpStatus.OK);
-        } catch (UserProfileNotCreatedException | UserProfileNotFoundException e) {
-            return new ResponseEntity<>("UserProfile not found", HttpStatus.NO_CONTENT);
+            UserProfile userProfileUpdate = serviceUserProfile.update(id, userProfile);
+            if (userProfileUpdate != null) {
+                UserProfileDto userProfileDtoUpdate = UserProfileDtoConverter
+                        .convertProfileToDto(userProfileUpdate);
+                return new ResponseEntity<>(userProfileDtoUpdate.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new UserProfileNotCreatedException().toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -79,10 +100,14 @@ public class ControllerUserProfileResponseImpl implements ControllerUserProfileR
     public ResponseEntity<String> delete(@PathVariable Long id) {
         log.debug("ControllerUserProfile 'Delete'");
         try {
-            serviceUserProfile.delete(id);
-            return new ResponseEntity<>("UserProfile was deleted.", HttpStatus.OK);
-        } catch (UserProfileNotFoundException e) {
-            return new ResponseEntity<>("UserProfile not found", HttpStatus.NO_CONTENT);
+            if (serviceUserProfile.read(id) != null) {
+                serviceUserProfile.delete(id);
+                return new ResponseEntity<>("UserProfile id " + id + " was deleted.", HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new UserProfileNotFoundException(id).toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

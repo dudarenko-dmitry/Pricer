@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.senla.pricer.dto.CategoryDto;
-import pl.senla.pricer.exception.CategoryByIdNotFoundException;
+import pl.senla.pricer.entity.Category;
+import pl.senla.pricer.exception.CategoryNotFoundException;
 import pl.senla.pricer.exception.CategoryNotCreatedException;
 import pl.senla.pricer.service.ServiceCategory;
 import pl.senla.pricer.utils.CategoryDtoConverter;
@@ -30,9 +31,13 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
             List<CategoryDto> list = serviceCategory.readAll(requestParams).stream()
                     .map(CategoryDtoConverter::convertCategoryToDto)
                     .toList();
+            if (list.isEmpty()) {
+                return new ResponseEntity<>("list is empty", HttpStatus.NO_CONTENT);
+            }
             return new ResponseEntity<>(list.toString(), HttpStatus.OK);
-        } catch (CategoryByIdNotFoundException e) {
-            return new ResponseEntity<>("Could not read Categories' list", HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -41,11 +46,16 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
     public ResponseEntity<String> create(@RequestBody CategoryDto categoryDto) {
         log.debug("ControllerCategory 'Create'");
         try {
-            CategoryDto category = CategoryDtoConverter.convertCategoryToDto(serviceCategory.create(categoryDto));
-            return new ResponseEntity<>(category.toString(), HttpStatus.CREATED);
-        } catch (CategoryNotCreatedException e) {
-            log.debug(e.toString());
-            return new ResponseEntity<>("Category not created", HttpStatus.FORBIDDEN);
+            Category category = serviceCategory.create(categoryDto);
+            if (category != null) {
+                CategoryDto categoryDtoNew = CategoryDtoConverter
+                        .convertCategoryToDto(category);
+                return new ResponseEntity<>(categoryDtoNew.toString(), HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(new CategoryNotCreatedException().toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -54,22 +64,33 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
     public ResponseEntity<String> read(@PathVariable Long id) {
         log.debug("ControllerCategory 'Read'");
         try {
-            CategoryDto categoryDto = CategoryDtoConverter.convertCategoryToDto(serviceCategory.read(id));
-            return new ResponseEntity<>(categoryDto.toString(), HttpStatus.OK);
-        } catch (CategoryByIdNotFoundException e) {
-            return new ResponseEntity<>("Category not found: " + e, HttpStatus.NO_CONTENT);
+            Category category = serviceCategory.read(id);
+            if (category != null) {
+                CategoryDto categoryDto = CategoryDtoConverter.convertCategoryToDto(category);
+                return new ResponseEntity<>(categoryDto.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new CategoryNotFoundException(id).toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody CategoryDto category) {
         log.debug("ControllerCategory 'Update'");
         try {
-            CategoryDto categoryDtoUpdate = CategoryDtoConverter.convertCategoryToDto(serviceCategory.update(id, categoryDto));
-            return new ResponseEntity<>(categoryDtoUpdate.toString(), HttpStatus.OK);
-        } catch (CategoryByIdNotFoundException | CategoryNotCreatedException e) {
-            return new ResponseEntity<>("Category not updated: " + e, HttpStatus.NO_CONTENT);
+            Category categoryUpdate = serviceCategory.update(id, category);
+            if (categoryUpdate != null) {
+                CategoryDto categoryDtoUpdate = CategoryDtoConverter
+                        .convertCategoryToDto(categoryUpdate);
+                return new ResponseEntity<>(categoryDtoUpdate.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new CategoryNotCreatedException().toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -78,10 +99,14 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
     public ResponseEntity<String> delete(@PathVariable Long id) {
         log.debug("ControllerCategory 'Delete'");
         try {
-            serviceCategory.delete(id);
-            return new ResponseEntity<>("Category was deleted.", HttpStatus.OK);
-        } catch (CategoryByIdNotFoundException e) {
-            return new ResponseEntity<>("Category not found", HttpStatus.NO_CONTENT);
+            if (serviceCategory.read(id) != null) {
+                serviceCategory.delete(id);
+                return new ResponseEntity<>("Category id " + id + " was deleted.", HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new CategoryNotFoundException(id).toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

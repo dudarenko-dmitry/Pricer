@@ -22,16 +22,16 @@ o	Ability to batch add information about prices and products (e.g., loading in C
 <<< General Requirements for the Assignment >>>
 Mandatory:
 •	The assignment must adhere to all canonical principles of writing Java programs and Java naming conventions.
-•	Adherence to MVC principles.
-•	Adherence to the principles of "High Cohesion" and "Loose Coupling."
-•	Well-thought-out modular structure (package structure).
++	Adherence to MVC principles.
++	Adherence to the principles of "High Cohesion" and "Loose Coupling."
++	Well-thought-out modular structure (package structure).
 •	Reasonable use of multiple design patterns.
-•	Have a database diagram.
++	Have a database diagram.
 •	The database must be brought to at least the 3rd normal form.
 •	Have a database initialization script (SQL).
 •	Have JUnit tests covering the main functionality.
-•	Have an exception handling system.
-•	Have a multi-level logging system.
++	Have an exception handling system.
++	Have a multi-level logging system.
 •	Have scripts for automatically building the application into a ready-to-use WAR or JAR file.
 •	Have detailed, step-by-step documentation on installing and deploying the application.
 •	Have a detailed user and role system (e.g., regular user and administrator).
@@ -44,12 +44,13 @@ Preferred:
 
 Technical Requirements for the Assignment:
 Mandatory:
-•	Use Hibernate or MyBatis for working with the database.
-•	Use Maven or Gradle.
-•	Use MySQL, Postgres, or Oracle (free limited version).
-•	Use Spring for configuring and implementing "inversion of control."
++	Use Hibernate or MyBatis for working with the database.
++	Use Maven or Gradle.
++	Use MySQL, Postgres, or Oracle (free limited version).
++	Use Spring for configuring and implementing "inversion of control."
 •	Use JUnit for writing Unit tests.
 •	Use Spring Security for user authorization.
+
 Defense of the Assignment:
 For admission to defense, you need to:
 •	Pass theory exams.

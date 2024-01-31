@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.senla.pricer.dto.ShopDto;
-import pl.senla.pricer.exception.CategoryByIdNotFoundException;
-import pl.senla.pricer.exception.ShopByIdNotFoundException;
+import pl.senla.pricer.entity.Shop;
+import pl.senla.pricer.exception.ShopNotFoundException;
 import pl.senla.pricer.exception.ShopNotCreatedException;
 import pl.senla.pricer.service.ServiceShop;
 import pl.senla.pricer.utils.ShopDtoConverter;
@@ -31,10 +31,13 @@ public class ControllerShopResponseImpl implements ControllerShopResponse {
             List<ShopDto> list = serviceShop.readAll(requestParams).stream()
                     .map(ShopDtoConverter::convertShopToDto)
                     .toList();
+            if (list.isEmpty()) {
+                return new ResponseEntity<>("list is empty", HttpStatus.NO_CONTENT);
+            }
             return new ResponseEntity<>(list.toString(), HttpStatus.OK);
-        } catch (ShopByIdNotFoundException e) {
-            log.debug(e.toString());
-            return new ResponseEntity<>("Could not read Shops' list", HttpStatus.NOT_FOUND);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
@@ -43,11 +46,15 @@ public class ControllerShopResponseImpl implements ControllerShopResponse {
     public ResponseEntity<String> create(@RequestBody ShopDto shopDto) {
         log.debug("ControllerCategory 'Create'");
         try {
-            ShopDto shopDtoNew = ShopDtoConverter.convertShopToDto(serviceShop.create(shopDto));
-            return new ResponseEntity<>(shopDtoNew.toString(), HttpStatus.CREATED);
-        } catch (ShopNotCreatedException e) {
-            log.debug(e.toString());
-            return new ResponseEntity<>("Shop not created", HttpStatus.FORBIDDEN);
+            Shop shopNew = serviceShop.create(shopDto);
+            if (shopNew != null) {
+                ShopDto shopDtoNew = ShopDtoConverter.convertShopToDto(shopNew);
+                return new ResponseEntity<>(shopDtoNew.toString(), HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(new ShopNotCreatedException().toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -56,24 +63,32 @@ public class ControllerShopResponseImpl implements ControllerShopResponse {
     public ResponseEntity<String> read(@PathVariable Long id) {
         log.debug("ControllerCategory 'Read'");
         try {
-            ShopDto shopDto = ShopDtoConverter.convertShopToDto(serviceShop.read(id));
-            return new ResponseEntity<>(shopDto.toString(), HttpStatus.OK);
-        } catch (ShopByIdNotFoundException e) {
-            log.debug(e.toString());
-            return new ResponseEntity<>("Shop not found.", HttpStatus.NO_CONTENT);
+            Shop shop = serviceShop.read(id);
+            if (shop != null) {
+                ShopDto shopDto = ShopDtoConverter.convertShopToDto(shop);
+                return new ResponseEntity<>(shopDto.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new ShopNotFoundException(id).toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody ShopDto shopDto) {
+    public ResponseEntity<String> update(@PathVariable Long id, @RequestBody ShopDto shop) {
         log.debug("ControllerCategory 'Update'");
         try {
-            ShopDto shopDtoUpdate = ShopDtoConverter.convertShopToDto(serviceShop.update(id, shopDto));
-            return new ResponseEntity<>(shopDtoUpdate.toString(), HttpStatus.OK);
-        } catch (ShopByIdNotFoundException | ShopNotCreatedException e) {
-            log.debug(e.toString());
-            return new ResponseEntity<>("Shop not updated.", HttpStatus.NOT_FOUND);
+            Shop shopUpdate = serviceShop.update(id, shop);
+            if (shopUpdate != null) {
+                ShopDto shopDtoUpdate = ShopDtoConverter.convertShopToDto(shopUpdate);
+                return new ResponseEntity<>(shopDtoUpdate.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new ShopNotCreatedException().toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(new ShopNotCreatedException().toString(), HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -82,11 +97,14 @@ public class ControllerShopResponseImpl implements ControllerShopResponse {
     public ResponseEntity<String> delete(@PathVariable Long id) {
         log.debug("ControllerCategory 'Delete'");
         try {
-            serviceShop.delete(id);
-            return new ResponseEntity<>("Shop was deleted.", HttpStatus.OK);
-        } catch (CategoryByIdNotFoundException e) {
-            log.debug(e.toString());
-            return new ResponseEntity<>("Shop not found", HttpStatus.NO_CONTENT);
+            if (serviceShop.read(id) != null) {
+                serviceShop.delete(id);
+                return new ResponseEntity<>("Shop id " + id + " was deleted.", HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new ShopNotFoundException(id).toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }

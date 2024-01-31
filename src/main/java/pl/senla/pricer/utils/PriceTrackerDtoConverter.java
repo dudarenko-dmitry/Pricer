@@ -10,6 +10,7 @@ public final class PriceTrackerDtoConverter {
     private PriceTrackerDtoConverter() {
     }
 
+
     public static PriceTrackingDto convertToDto(PriceTracking priceTracking) {
         return PriceTrackingDto.builder()
                 .productName(priceTracking.getProduct().getName())

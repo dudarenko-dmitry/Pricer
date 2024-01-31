@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import pl.senla.pricer.dao.DaoShop;
 import pl.senla.pricer.dto.ShopDto;
 import pl.senla.pricer.entity.Shop;
-import pl.senla.pricer.exception.ShopByIdNotFoundException;
+import pl.senla.pricer.exception.ShopNotFoundException;
 import pl.senla.pricer.utils.ShopDtoConverter;
 
 import java.util.Collections;
@@ -74,7 +74,7 @@ public class ServiceShopImpl implements ServiceShop {
     public Shop read(Long id) {
         log.debug("Start ServiceShop 'Read by ID'");
         return daoShop.findById(id)
-                .orElseThrow(() -> new ShopByIdNotFoundException(id));
+                .orElseThrow(() -> new ShopNotFoundException(id));
     }
 
     @Override
@@ -96,14 +96,14 @@ public class ServiceShopImpl implements ServiceShop {
             log.debug("ServiceShop Updated Shop");
             return daoShop.save(shopUpdate);
         }
-        throw new ShopByIdNotFoundException(id);
+        throw new ShopNotFoundException(id);
     }
 
     @Override
     public void delete(Long id) {
         log.debug("Start ServiceShop 'Delete by ID'");
         if (!daoShop.existsById(id)) {
-            log.debug(String.valueOf(new ShopByIdNotFoundException(id)));
+            log.debug(String.valueOf(new ShopNotFoundException(id)));
         } else {
             log.debug("Shop was deleted");
             daoShop.deleteById(id);
