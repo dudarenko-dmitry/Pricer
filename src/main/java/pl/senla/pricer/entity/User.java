@@ -12,17 +12,15 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(
-        name = "user",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"email"})
-)
+@Table(name = "user",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"email"}))
 public class User implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "email", nullable = false)
@@ -34,5 +32,9 @@ public class User implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    @OneToOne
+    @JoinColumn(name = "user_profile_id")
+    private UserProfile userProfile;
 
 }

@@ -28,8 +28,4 @@ public class UserProfile implements Serializable {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @PrimaryKeyJoinColumn(name = "user_id")
-    @OneToOne(cascade = CascadeType.ALL)
-    private User user;
-
 }
