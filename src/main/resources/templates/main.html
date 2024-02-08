@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      xmlns:sec="http://www.w3.org/1999/xhtml" lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>main</title>
+</head>
+<body>
+<h1 th:inline="text">Hello, <span th:remove="tag" sec:authentication="name">thymeleaf</span>!</h1>
+<form th:action="@{/auth/logout}" method="post">
+    <input type="submit" value="Log Out"/>
+</form>
+<h2>Main menu:</h2>
+<h3><a th:href="@{/v2/categories}">Get All Categories</a></h3>
+<h3><a th:href="@{/v2/shops}">Get All Shops</a></h3>
+<h3><a th:href="@{/v2/products}">Get All Products</a></h3>
+<h3><a th:href="@{/v2/price_tracking}">Get All Price Tracking</a></h3>
+<h3><a th:href="@{/v2/user_profiles}">Get All Profiles</a></h3>
+</body>
+</html>

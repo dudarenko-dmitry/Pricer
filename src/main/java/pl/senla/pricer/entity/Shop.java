@@ -31,7 +31,7 @@ public class Shop implements Serializable {
     @Column(name = "city", nullable = false)
     private String city;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address", nullable = false, unique = true)
     private String address;
 
 }

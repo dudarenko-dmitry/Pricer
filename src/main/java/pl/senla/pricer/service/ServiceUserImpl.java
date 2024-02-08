@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.senla.pricer.dao.DaoUser;
+import pl.senla.pricer.dto.UserDto;
 import pl.senla.pricer.entity.User;
 import pl.senla.pricer.exception.UserNotFoundException;
 
@@ -29,13 +30,17 @@ public class ServiceUserImpl implements ServiceUser {
     }
 
     @Override
-    public User create(User userDto) {
+    public User create(UserDto userDto) {
         log.debug("Start ServiceUser 'Create'");
-        String email = userDto.getEmail();
+        String username = userDto.getUsername();
         boolean isPresent = readAll(null).stream()
-                .anyMatch(u -> u.getEmail().equals(email));
+                .anyMatch(u -> u.getUsername().equals(username));
         if (!isPresent) {
-            return daoUser.save(userDto);
+            User userNew = new User();
+            userNew.setUsername(username);
+            userNew.setPassword(userDto.getPassword());
+            userNew.setIsEnabled(true);
+            return daoUser.save(userNew);
         }
         log.info("This User is already exists.");
         return null;
@@ -49,14 +54,14 @@ public class ServiceUserImpl implements ServiceUser {
     }
 
     @Override
-    public User update(Long id, User user) {
+    public User update(Long id, UserDto userDto) {
         log.debug("Start ServiceUser 'Update'");
         Optional<User> userUpdate = daoUser.findById(id);
         if (userUpdate.isPresent()) {
             User userNew = userUpdate.get();
-            userNew.setEmail(user.getEmail());
-            userNew.setPassword(user.getPassword());
-            userNew.setRole(user.getRole());
+//            userNew.setUsername(userDto.getUsername());
+//            userNew.setPassword(userDto.getPassword());
+//            userNew.setIsEnabled(userDto.getIsEnabled());
             return daoUser.save(userNew);
         }
         log.info("User not found.");
@@ -65,7 +70,7 @@ public class ServiceUserImpl implements ServiceUser {
 
     @Override
     public void delete(Long id) {
-        log.debug("Start ServiceUser 'Update'");
-        log.info("Application doesn't have functionality of delete User.");
+        log.debug("Start ServiceUser 'Delete'");
+        log.info("Application doesn't have functionality to delete User.");
     }
 }
