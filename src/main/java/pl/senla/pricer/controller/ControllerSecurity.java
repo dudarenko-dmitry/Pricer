@@ -5,7 +5,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
 //@RestController // doesn't work in http: doesn't redirect to templates *.html
 @Controller
 @RequestMapping("/auth")
@@ -30,10 +29,4 @@ public class ControllerSecurity {
         return "registration";
     }
 
-//    @PostMapping("/logout")
-//    public void logout(HttpServletRequest request, HttpServletResponse response) {
-//        SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();
-//        securityContextLogoutHandler.logout(request,response,null);
-//        System.out.println("Test logout");
-//    }
 }
