@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pl.senla.pricer.dto.PriceTrackingDto;
 import pl.senla.pricer.service.ServicePriceTracking;
-import pl.senla.pricer.utils.PriceTrackerDtoConverter;
+import pl.senla.pricer.utils.PriceTrackingDtoConverter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,7 +25,7 @@ public class ControllerPriceTrackingImpl implements ControllerPriceTracking {
         log.debug("ControllerProduct 'ReadAll'");
         if (requestParams.isEmpty()) {
             return servicePriceTracking.readAll(requestParams).stream()
-                    .map(PriceTrackerDtoConverter::convertToDto)
+                    .map(PriceTrackingDtoConverter::convertToDto)
                     .toList();
         }
         return null;
@@ -35,21 +35,21 @@ public class ControllerPriceTrackingImpl implements ControllerPriceTracking {
     @PostMapping("/")
     public PriceTrackingDto create(@RequestBody PriceTrackingDto priceTrackingDto) {
         log.debug("ControllerProduct 'Create'");
-        return PriceTrackerDtoConverter.convertToDto(servicePriceTracking.create(priceTrackingDto));
+        return PriceTrackingDtoConverter.convertToDto(servicePriceTracking.create(priceTrackingDto));
     }
 
     @Override
     @GetMapping("/{id}")
     public PriceTrackingDto read(@PathVariable Long id) {
         log.debug("ControllerProduct 'Read'");
-        return PriceTrackerDtoConverter.convertToDto(servicePriceTracking.read(id));
+        return PriceTrackingDtoConverter.convertToDto(servicePriceTracking.read(id));
     }
 
     @Override
     @PutMapping("/{id}")
     public PriceTrackingDto update(@PathVariable Long id, @RequestBody PriceTrackingDto priceTrackingDto) {
         log.debug("ControllerProduct 'Update'");
-        return PriceTrackerDtoConverter.convertToDto(servicePriceTracking.update(id, priceTrackingDto));
+        return PriceTrackingDtoConverter.convertToDto(servicePriceTracking.update(id, priceTrackingDto));
     }
 
     @Override

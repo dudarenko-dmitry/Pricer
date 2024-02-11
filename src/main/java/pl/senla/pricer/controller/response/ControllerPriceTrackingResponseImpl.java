@@ -9,8 +9,9 @@ import pl.senla.pricer.dto.PriceTrackingDto;
 import pl.senla.pricer.entity.PriceTracking;
 import pl.senla.pricer.exception.PriceTrackingByIdNotFoundException;
 import pl.senla.pricer.exception.PriceTrackingNotCreatedException;
+import pl.senla.pricer.exception.ProductNotCreatedException;
 import pl.senla.pricer.service.ServicePriceTracking;
-import pl.senla.pricer.utils.PriceTrackerDtoConverter;
+import pl.senla.pricer.utils.PriceTrackingDtoConverter;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,10 +28,10 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     @Override
     @GetMapping
     public ResponseEntity<String> readAll(@RequestParam Map<String, String> requestParams) {
-        log.debug("ControllerProduct 'ReadAll'");
+        log.debug("ControllerPriceTracking 'ReadAll'");
         try {
             List<PriceTrackingDto> list = servicePriceTracking.readAll(requestParams).stream()
-                    .map(PriceTrackerDtoConverter::convertToDto)
+                    .map(PriceTrackingDtoConverter::convertToDto)
                     .toList();
             if (list.isEmpty()) {
                 return new ResponseEntity<>("list is empty", HttpStatus.NO_CONTENT);
@@ -45,11 +46,11 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     @Override
     @PostMapping("/")
     public ResponseEntity<String> create(@RequestBody PriceTrackingDto priceTrackingDto) {
-        log.debug("ControllerProduct 'Create'");
+        log.debug("ControllerPriceTracking 'Create'");
         try {
             PriceTracking priceTracking = servicePriceTracking.create(priceTrackingDto);
             if (priceTracking != null) {
-                PriceTrackingDto priceTrackingDtoNew = PriceTrackerDtoConverter
+                PriceTrackingDto priceTrackingDtoNew = PriceTrackingDtoConverter
                     .convertToDto(priceTracking);
                 return new ResponseEntity<>(priceTrackingDtoNew.toString(), HttpStatus.CREATED);
             }
@@ -57,19 +58,36 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
         } catch (RuntimeException e) {
             log.warn(e.toString());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//            return new ResponseEntity<>(new PriceTrackingNotCreatedException().toString(), HttpStatus.OK);
+        }
+    }
 
+    @Override
+    @PostMapping("/load/")
+    public ResponseEntity<String> createFromFile(@RequestBody String filePath) {
+        log.debug("ControllerPriceTracking 'createFromFile'");
+        try {
+            System.out.println("filePath: " + filePath);
+            List<PriceTrackingDto> list = servicePriceTracking.createFromFile(filePath).stream()
+                    .map(PriceTrackingDtoConverter::convertToDto)
+                    .toList();
+            if (!list.isEmpty()) {
+                return new ResponseEntity<>(list.toString(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(new ProductNotCreatedException().toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<String> read(@PathVariable Long id) {
-        log.debug("ControllerProduct 'Read'");
+        log.debug("ControllerPriceTracking 'Read'");
         try {
             PriceTracking priceTracking = servicePriceTracking.read(id);
             if (priceTracking != null) {
-                PriceTrackingDto priceTrackingDto = PriceTrackerDtoConverter
+                PriceTrackingDto priceTrackingDto = PriceTrackingDtoConverter
                         .convertToDto(priceTracking);
                 return new ResponseEntity<>(priceTrackingDto.toString(), HttpStatus.OK);
             }
@@ -83,11 +101,11 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     @Override
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody PriceTrackingDto priceTracking) {
-        log.debug("ControllerProduct 'Update'");
+        log.debug("ControllerPriceTracking 'Update'");
         try {
             PriceTracking priceTrackingUpdate = servicePriceTracking.update(id, priceTracking);
             if (priceTrackingUpdate != null) {
-                PriceTrackingDto priceTrackingDtoUpdate = PriceTrackerDtoConverter
+                PriceTrackingDto priceTrackingDtoUpdate = PriceTrackingDtoConverter
                         .convertToDto(priceTrackingUpdate);
                 return new ResponseEntity<>(priceTrackingDtoUpdate.toString(), HttpStatus.OK);
             }
@@ -101,7 +119,7 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     @Override
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
-        log.debug("ControllerProduct 'Delete'");
+        log.debug("ControllerPriceTracking 'Delete'");
         try {
             if (servicePriceTracking.read(id) != null) {
                 servicePriceTracking.delete(id);
@@ -117,7 +135,7 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     @Override
     @GetMapping("/dynamic")
     public ResponseEntity<String> getPriceDynamic(@RequestParam Map<String, String> requestParams) {
-        log.debug("ControllerProduct 'getPriceDynamic'");
+        log.debug("ControllerPriceTracking 'getPriceDynamic'");
         if (requestParams.isEmpty()) {
             log.info("Not enough parameters in get-request for this method.");
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);

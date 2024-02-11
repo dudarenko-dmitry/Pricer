@@ -12,6 +12,7 @@ import pl.senla.pricer.entity.Product;
 import pl.senla.pricer.entity.Shop;
 import pl.senla.pricer.exception.PriceNotFoundException;
 import pl.senla.pricer.exception.PriceTrackingNotFoundException;
+import pl.senla.pricer.loader.DataLoader;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -26,6 +27,8 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking {
     private DaoProduct daoProduct;
     @Autowired
     private DaoShop daoShop;
+    @Autowired
+    private DataLoader<PriceTrackingDto> priceTrackingDtoDataLoader;
 
     @Override
     public List<PriceTracking> readAll(Map<String, String> requestParams) {
@@ -50,8 +53,8 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking {
                     registrationDateString != null) {
                 Long productId = daoProduct.findByName(productName).getId();
                 Long shopId1 = daoShop.findByAddress(shopAddress1).getId();
-                prices = daoPriceTracking
-                        .findPriceForProductShopDate(productId, registrationDateString, shopId1);
+                prices = Collections.singletonList(daoPriceTracking
+                        .findPriceForProductShopDate(productId, registrationDateString, shopId1));
             } else if (productName != null &&
                     shopAddress1 != null &&
                     shopAddress2 != null &&
@@ -92,6 +95,35 @@ public class ServicePriceTrackingImpl implements ServicePriceTracking {
         }
         log.info("Such Price is already registered.");
         return null;
+    }
+
+    @Override
+    public List<PriceTracking> createFromFile(String filePath) {
+        log.debug("Start ServicePriceTracking 'createFromFile'");
+        List<PriceTrackingDto> priceTrackingDtoList = priceTrackingDtoDataLoader.loadData(filePath);
+        List<PriceTracking> priceTrackingList = new ArrayList<>();
+        for(PriceTrackingDto priceTrackingDto : priceTrackingDtoList) {
+            Long productId = daoProduct.findByName(priceTrackingDto.getProductName()).getId();
+            String regDate = priceTrackingDto.getDateString();
+            Long shopId = daoShop.findByAddress(priceTrackingDto.getAddress()).getId();
+            PriceTracking priceTrackingNew = daoPriceTracking.findPriceForProductShopDate(productId, regDate, shopId);
+            if (priceTrackingNew == null) {
+                priceTrackingNew = new PriceTracking();
+                priceTrackingNew.setProduct(daoProduct.getReferenceById(productId));
+                priceTrackingNew.setPrice(priceTrackingDto.getPrice());
+                priceTrackingNew.setShop(daoShop.getReferenceById(shopId));
+                priceTrackingNew.setDate(convertStringToDate(regDate));
+                log.debug("Add new PriceTracking to List");
+                priceTrackingList.add(priceTrackingNew);
+            }
+            log.info("Such PriceTracking {} is already exists", priceTrackingNew);
+        }
+        if (!priceTrackingList.isEmpty()) {
+            log.debug("Save new PriceTrackings' List");
+            return daoPriceTracking.saveAll(priceTrackingList);
+        }
+        log.debug("List of new PriceTrackings is empty");
+        return priceTrackingList;
     }
 
     @Override

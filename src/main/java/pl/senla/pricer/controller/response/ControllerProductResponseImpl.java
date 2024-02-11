@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.senla.pricer.dto.ProductDto;
 import pl.senla.pricer.entity.Product;
@@ -24,6 +25,7 @@ public class ControllerProductResponseImpl implements ControllerProductResponse 
     private ServiceProduct serviceProduct;
 
     @Override
+    @PreAuthorize("hasAuthority('read')")
     @GetMapping
     public ResponseEntity<String> readAll(@RequestParam Map<String, String> requestParams) {
         log.debug("ControllerProduct 'ReadAll'");
@@ -42,6 +44,7 @@ public class ControllerProductResponseImpl implements ControllerProductResponse 
     }
 
     @Override
+    @PreAuthorize("hasAuthority('write')")
     @PostMapping("/")
     public ResponseEntity<String> create(@RequestBody ProductDto productDto) {
         log.debug("ControllerProduct 'Create'");
@@ -50,6 +53,25 @@ public class ControllerProductResponseImpl implements ControllerProductResponse 
             if (productNew != null) {
                 ProductDto productDtoNew = ProductDtoConverter.convertProductToDto(productNew);
                 return new ResponseEntity<>(productDtoNew.toString(), HttpStatus.CREATED);
+            }
+            return new ResponseEntity<>(new ProductNotCreatedException().toString(), HttpStatus.OK);
+        } catch (RuntimeException e) {
+            log.warn(e.toString());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Override
+    @PostMapping("/load/")
+    public ResponseEntity<String> createFromFile(@RequestBody String filePath) {
+        log.debug("ControllerProduct 'createFromFile'");
+        try {
+            System.out.println("filePath: " + filePath);
+            List<ProductDto> list = serviceProduct.createFromFile(filePath).stream()
+                    .map(ProductDtoConverter::convertProductToDto)
+                    .toList();
+            if (!list.isEmpty()) {
+                return new ResponseEntity<>(list.toString(), HttpStatus.OK);
             }
             return new ResponseEntity<>(new ProductNotCreatedException().toString(), HttpStatus.OK);
         } catch (RuntimeException e) {

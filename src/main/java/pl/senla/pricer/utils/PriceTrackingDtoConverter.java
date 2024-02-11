@@ -5,11 +5,10 @@ import pl.senla.pricer.entity.PriceTracking;
 
 import java.time.LocalDate;
 
-public final class PriceTrackerDtoConverter {
+public final class PriceTrackingDtoConverter {
 
-    private PriceTrackerDtoConverter() {
+    private PriceTrackingDtoConverter() {
     }
-
 
     public static PriceTrackingDto convertToDto(PriceTracking priceTracking) {
         return PriceTrackingDto.builder()

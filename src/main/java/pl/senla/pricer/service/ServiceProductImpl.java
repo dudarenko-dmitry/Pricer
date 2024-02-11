@@ -8,11 +8,9 @@ import pl.senla.pricer.dao.DaoProduct;
 import pl.senla.pricer.dto.ProductDto;
 import pl.senla.pricer.entity.Product;
 import pl.senla.pricer.exception.ProductByIdNotFoundException;
+import pl.senla.pricer.loader.DataLoader;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -20,9 +18,10 @@ public class ServiceProductImpl implements ServiceProduct {
 
     @Autowired
     private DaoProduct daoProduct;
-
     @Autowired
     private DaoCategory daoCategory;
+    @Autowired
+    private DataLoader<ProductDto> productLoader;
 
     @Override
     public List<Product> readAll(Map<String, String> requestParams) {
@@ -52,6 +51,30 @@ public class ServiceProductImpl implements ServiceProduct {
         }
         log.info("Such Product is already exists.");
         return null;
+    }
+
+    @Override
+    public List<Product> createFromFile(String filePath) {
+        log.debug("Start ServiceProduct 'createFromFile'");
+        List<ProductDto> productDtoList = productLoader.loadData(filePath);
+        List<Product> productList = new ArrayList<>();
+        for (ProductDto productDto : productDtoList) {
+            Product productNew = daoProduct.findByName(productDto.getName());
+            if (productNew == null) {
+                productNew = new Product();
+                productNew.setName(productDto.getName());
+                productNew.setCategory(daoCategory.findByName(productDto.getCategoryName()));
+                log.debug("Add new Product to List");
+                productList.add(productNew);
+            }
+            log.info("Such Product {} is already exists", productNew);
+        }
+        if (!productList.isEmpty()) {
+            log.debug("Save new Products' List");
+            return daoProduct.saveAll(productList);
+        }
+        log.debug("List of new Products is empty");
+        return productList;
     }
 
     @Override

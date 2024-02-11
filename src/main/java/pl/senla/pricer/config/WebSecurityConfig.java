@@ -1,8 +1,10 @@
 package pl.senla.pricer.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import pl.senla.pricer.entity.Permission;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -22,25 +25,30 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class WebSecurityConfig {
 
     @Autowired
+    @Qualifier("userDetailsServiceImpl")
     private UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((request) -> request
-                                .requestMatchers("/", "/auth/login", "/auth/registration")
+                        .requestMatchers("/", "/auth/login", "/auth/registration")
                                 .permitAll()
-//                        .requestMatchers(HttpMethod.GET, "/v2/**")
-//                            .hasAuthority(Permission.READ.getPermission())
-//                        .requestMatchers(HttpMethod.POST, "/v2/**")
-//                            .hasAuthority(Permission.WRITE.getPermission())
-//                        .requestMatchers(HttpMethod.POST, "/admin")
-//                            .hasAuthority(Permission.ADMIN_WRITE.getPermission())
-//                        .requestMatchers(HttpMethod.PUT, "/v2/**")
-//                            .hasAuthority(Permission.UPDATE.getPermission())
-//                        .requestMatchers(HttpMethod.DELETE, "/v2/**")
-//                            .hasAuthority(Permission.DELETE.getPermission()
-//                            )
+                        .requestMatchers(HttpMethod.GET, "/v2/**")
+                            .hasAuthority(Permission.READ.getPermission())
+//                                .hasAnyRole("ADMIN", "REGULAR")
+                        .requestMatchers(HttpMethod.POST, "/v2/**")
+                            .hasAuthority(Permission.WRITE.getPermission())
+//                                .hasAnyRole("ADMIN", "REGULAR")
+                        .requestMatchers(HttpMethod.POST, "/admin")
+                            .hasAuthority(Permission.ADMIN_WRITE.getPermission())
+//                                .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/v2/**")
+                            .hasAuthority(Permission.UPDATE.getPermission())
+//                                .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/v2/**")
+                            .hasAuthority(Permission.DELETE.getPermission())
+//                                .hasRole("ADMIN")
                                 .anyRequest()
                                 .authenticated()
                 )

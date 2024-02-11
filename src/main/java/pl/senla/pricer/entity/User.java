@@ -12,6 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+//@Table(name = "users",
 @Table(name = "users",
         uniqueConstraints = @UniqueConstraint(columnNames = {"username"}))
 public class User implements Serializable {

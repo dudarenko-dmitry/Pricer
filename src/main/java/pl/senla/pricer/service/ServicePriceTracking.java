@@ -9,6 +9,8 @@ import java.util.Map;
 
 public interface ServicePriceTracking extends ServiceCRUDAll<PriceTracking, PriceTrackingDto> {
 
+    List<PriceTracking> createFromFile(String filePath);
+
     Map<LocalDate, Integer> getPriceDynamic(Map<String, String> requestParams);
 
 }

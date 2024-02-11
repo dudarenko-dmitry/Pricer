@@ -18,7 +18,7 @@ public interface DaoPriceTracking extends JpaRepository<PriceTracking, Long> {
             "pt.registration_date=? AND " +
             "pt.shop_id=?",
             nativeQuery = true)
-    List<PriceTracking> findPriceForProductShopDate(Long productId, String regDate, Long shopId);
+    PriceTracking findPriceForProductShopDate(Long productId, String regDate, Long shopId);
 
     //      Ability to track price dynamics for a specific product in a given period.
     @Query(value = "SELECT " +
