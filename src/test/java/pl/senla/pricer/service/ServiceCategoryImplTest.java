@@ -94,7 +94,7 @@ class ServiceCategoryImplTest {
     }
 
     @Test
-    public void testCreateNewCategory_success() {
+    public void createNewCategory_success() {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setName("TestCategory");
         Category savedCategory = new Category();
@@ -107,19 +107,20 @@ class ServiceCategoryImplTest {
 
         assertNotNull(createdCategory);
         assertEquals("TestCategory", createdCategory.getName());
+        assertEquals(savedCategory, createdCategory);
         verify(daoCategoryMock, times(1)).findByName("TestCategory");
         verify(daoCategoryMock, times(1)).save(any(Category.class));
     }
 
     @Test
-    void testCreateNewCategory_forbidden() {
+    void createNewCategory_forbidden() {
         CategoryDto categoryDto = new CategoryDto();
         categoryDto.setName("TestCategory");
 
         Category savedCategory = new Category();
         savedCategory.setName("TestCategory");
 
-        when(daoCategoryMock.findByName("TestCategory")).thenReturn(savedCategory);
+        when(daoCategoryMock.findByName("TestCategory")).thenReturn(any(Category.class));
 
         Category createdCategory = serviceCategoryMock.create(categoryDto);
 
@@ -136,8 +137,10 @@ class ServiceCategoryImplTest {
         when(daoCategoryMock.findById(idTest)).thenReturn(Optional.of(savedCategory));
 
         Category readCategory = serviceCategoryMock.read(idTest);
+
         assertNotNull(readCategory);
         assertEquals(savedCategory, readCategory);
+        verify(daoCategoryMock, times(1)).findById(idTest);
     }
 
     @Test
@@ -146,6 +149,7 @@ class ServiceCategoryImplTest {
 
         when(daoCategoryMock.findById(idTest)).thenReturn(null);
         assertThrows(NullPointerException.class, () -> serviceCategoryMock.read(idTest));
+        verify(daoCategoryMock, times(1)).findById(idTest);
     }
 
     @Test
@@ -174,29 +178,25 @@ class ServiceCategoryImplTest {
         when(daoCategoryMock.findById(idTest)).thenReturn(null);
 
         assertThrows(NullPointerException.class, () -> serviceCategoryMock.update(idTest, categoryDtoNew));
+        verify(daoCategoryMock, times(1)).findById(idTest);
     }
 
     @Test
     void delete_success() {
-        Category category = new Category(1L, "TestCategory");
         Long idTest = 1L;
 
         when(daoCategoryMock.existsById(idTest)).thenReturn(true);
         serviceCategoryMock.delete(idTest);
 
-        assertNotNull(category);
-        assertNotNull(idTest);
         verify(daoCategoryMock, times(1)).deleteById(idTest);
     }
 
     @Test
     void delete_throwsException() {
         Long idTest = 1L;
-
         when(daoCategoryMock.existsById(idTest)).thenReturn(false);
-
-        assertNotNull(idTest);
         assertThrows(NullPointerException.class, () -> serviceCategoryMock.delete(idTest));
+        verify(daoCategoryMock, times(1)).existsById(idTest);
     }
 
 }

@@ -80,7 +80,7 @@ public class ServiceCategoryImpl implements ServiceCategory{
             return daoCategory.save(newCategory);
         }
         log.debug(String.valueOf(new CategoryNotFoundException(id)));
-        return null;
+        throw new CategoryNotFoundException(id);
     }
 
     @Override
@@ -108,14 +108,13 @@ public class ServiceCategoryImpl implements ServiceCategory{
 //        return categories;
 //    }
 
-    // don't use. Deprecated
-//    @Override
-//    public Category readByName(String name) {
-//        log.debug("Start ServiceCategory 'Read by ID'");
-//        Category category = daoCategory.findByName(name);
-//        if (category == null) {
-//            log.info("Category with name {} doesn't exists", name);
-//        }
-//        return category;
-//    }
+    @Override
+    public Category readByName(String name) {
+        log.debug("Start ServiceCategory 'Read by ID'");
+        Category category = daoCategory.findByName(name);
+        if (category == null) {
+            log.info("Category with name {} doesn't exists", name);
+        }
+        return category;
+    }
 }

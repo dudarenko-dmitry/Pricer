@@ -27,7 +27,6 @@ public class ServiceShopImpl implements ServiceShop {
         List<Shop> shops = daoShop.findAll();
         if (shops.isEmpty()) {
             log.info("List of Shops is empty");
-            return shops;
         }
         if(requestParams.isEmpty()) {
             return  shops;
@@ -36,26 +35,43 @@ public class ServiceShopImpl implements ServiceShop {
         String name = requestParams.get("name");
         String address = requestParams.get("address");
         log.info("Shops sorted by {} or filtered by name {} / address {}", sort, name, address);
-        if(name != null) {
-            if(address != null) {
-                return daoShop.findAllByName(name).stream()
-                        .filter(s -> s.getAddress().equals(address))
-                        .toList();
-            }
-            return daoShop.findAllByName(name);
+        if (address != null) {
+            return Collections.singletonList(daoShop.findByAddress(address));
         } else {
-            if(address != null) {
-                return Collections.singletonList(daoShop.findByAddress(address));
-            }
-            switch (sort) {
-                case "id" -> {return shops;}
-                case "name" -> {return daoShop.findAllByOrderByName();}
-                default -> {
-                    log.warn("Please check your input.");
-                    return null;
-                }
+            if (name != null) {
+                return daoShop.findAllByName(name);
             }
         }
+        switch (sort) {
+            case "id" -> {return shops;}
+            case "name" -> {return daoShop.findAllByOrderByName();}
+            case "address" -> {return daoShop.findAllByOrderByAddress();}
+            default -> {
+                log.warn("Please check your input.");
+                return null;
+            }
+        }
+
+//        if(name != null) {
+//            if(address != null) {
+//                return daoShop.findAllByAddress(name).stream()
+//                        .filter(s -> s.getAddress().equals(address))
+//                        .toList();
+//            }
+//            return daoShop.findAllByName(name);
+//        } else {
+//            if(address != null) {
+//                return Collections.singletonList(daoShop.findByAddress(address));
+//            }
+//            switch (sort) {
+//                case "id" -> {return shops;}
+//                case "name" -> {return daoShop.findAllByOrderByName();}
+//                default -> {
+//                    log.warn("Please check your input.");
+//                    return null;
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -82,7 +98,7 @@ public class ServiceShopImpl implements ServiceShop {
         log.debug("Start ServiceShop 'Read by Address'");
         Shop shop = daoShop.findByAddress(address);
         if (shop == null) {
-            log.info("There is no any shop in this address {}: ", address);
+            log.info("There is no any shop with this address: {}", address);
         }
         return shop;
     }
@@ -110,28 +126,28 @@ public class ServiceShopImpl implements ServiceShop {
         }
     }
 
-    @Override // remove ???
-    public List<Shop> readAllSortByName() {
-        log.debug("Start ServiceShop 'readAllSortByName'");
-        List<Shop> shops = daoShop.findAllByOrderByName();
-        if (shops.isEmpty()) {
-            log.debug("List of Shops is empty");
-            return shops;
-        }
-        log.debug("ServiceShop 'ReadAll' returns List of Shops sorted by Name");
-        return shops;
-    }
+//    @Override // remove ???
+//    public List<Shop> readAllSortByName() {
+//        log.debug("Start ServiceShop 'readAllSortByName'");
+//        List<Shop> shops = daoShop.findAllByOrderByName();
+//        if (shops.isEmpty()) {
+//            log.debug("List of Shops is empty");
+//            return shops;
+//        }
+//        log.debug("ServiceShop 'ReadAll' returns List of Shops sorted by Name");
+//        return shops;
+//    }
 
-    @Override // remove ???
-    public List<Shop> readAllByName(String name) {
-        log.debug("Start ServiceShop 'readAllByName'");
-        List<Shop> shops = daoShop.findAllByName(name);
-        if (shops.isEmpty()) {
-            log.info("Shops with name {} not found", name);
-            return shops;
-        }
-        log.debug("ServiceShop 'ReadAll' returns List of Shops filtered by Name");
-        return shops;
-    }
+//    @Override // remove ???
+//    public List<Shop> readAllByName(String name) {
+//        log.debug("Start ServiceShop 'readAllByName'");
+//        List<Shop> shops = daoShop.findAllByName(name);
+//        if (shops.isEmpty()) {
+//            log.info("Shops with name {} not found", name);
+//            return shops;
+//        }
+//        log.debug("ServiceShop 'ReadAll' returns List of Shops filtered by Name");
+//        return shops;
+//    }
 
 }

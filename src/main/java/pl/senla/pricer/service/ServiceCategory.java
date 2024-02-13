@@ -8,6 +8,6 @@ import java.util.List;
 public interface ServiceCategory extends ServiceCRUDAll<Category, CategoryDto> {
 
 //    List<Category> readAllOrderByName();
-//    Category readByName(String filter);
+    Category readByName(String filter);
 
 }
