@@ -34,7 +34,6 @@ class ServiceShopImplTest {
 
         List<Shop> readList = serviceShopMock.readAll(requestParams);
 
-        assertNotNull(savedList);
         assertNotNull(readList);
         assertTrue(requestParams.isEmpty());
         assertEquals(savedList, readList);
@@ -96,7 +95,6 @@ class ServiceShopImplTest {
         String testName = "Name 2";
         requestParams.put(parameter, testName);
         Shop shop1 = new Shop(1L, "Name 2", "City 1", "Address 3");
-        Shop shop2 = new Shop(2L, "Name 3", "City 2", "Address 1");
         Shop shop3 = new Shop(3L, "Name 2", "City 3", "Address 2");
         List<Shop> filteredList = new ArrayList<>();
         filteredList.add(0, shop3);

@@ -51,27 +51,6 @@ public class ServiceShopImpl implements ServiceShop {
                 return null;
             }
         }
-
-//        if(name != null) {
-//            if(address != null) {
-//                return daoShop.findAllByAddress(name).stream()
-//                        .filter(s -> s.getAddress().equals(address))
-//                        .toList();
-//            }
-//            return daoShop.findAllByName(name);
-//        } else {
-//            if(address != null) {
-//                return Collections.singletonList(daoShop.findByAddress(address));
-//            }
-//            switch (sort) {
-//                case "id" -> {return shops;}
-//                case "name" -> {return daoShop.findAllByOrderByName();}
-//                default -> {
-//                    log.warn("Please check your input.");
-//                    return null;
-//                }
-//            }
-//        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import pl.senla.pricer.dao.DaoProduct;
 import pl.senla.pricer.dto.ProductDto;
 import pl.senla.pricer.entity.Product;
 import pl.senla.pricer.exception.ProductByIdNotFoundException;
+import pl.senla.pricer.exception.ProductNotFoundException;
 import pl.senla.pricer.loader.DataLoader;
 
 import java.util.*;
@@ -89,7 +90,7 @@ public class ServiceProductImpl implements ServiceProduct {
         log.debug("Start ServiceProduct 'Read by ID'");
         Product product = daoProduct.findByName(name);
         if (product == null) {
-            log.info("Product with name {} not found", name);
+            throw new ProductNotFoundException(name);
         }
         return product;
     }
@@ -97,23 +98,22 @@ public class ServiceProductImpl implements ServiceProduct {
     @Override
     public Product update(Long id, ProductDto productDto) {
         log.debug("Start ServiceProduct 'Update'");
-        Optional<Product> product = daoProduct.findById(id);
-        if (product.isPresent()) {
-            Product productUpdate = product.get();
-            productUpdate.setName(productDto.getName());
-            productUpdate.setCategory(daoCategory.findByName(productDto.getCategoryName()));
+        if (daoProduct.findById(id).isPresent()) {
+            Product productUpdate = new Product(id,
+                    productDto.getName(),
+                    daoCategory.findByName(productDto.getCategoryName()));
             return daoProduct.save(productUpdate);
         }
-        log.info("Product with id {} not found", id);
-        return null;
+        throw new ProductByIdNotFoundException(id);
     }
 
     @Override
     public void delete(Long id) {
         log.debug("Start ServiceProduct 'Delete by ID'");
         if (!daoProduct.existsById(id)) {
-            log.info("Product with id {} not found", id);
+            log.debug(String.valueOf(new ProductByIdNotFoundException(id)));
         } else {
+
             log.debug("Product was deleted");
             daoProduct.deleteById(id);
         }
@@ -121,14 +121,12 @@ public class ServiceProductImpl implements ServiceProduct {
 
     private List<Product> getListWithParameters(Map<String, String> requestParams) {
         String sort = requestParams.get("sort");
-        String categoryName = requestParams.get("category");
+        String categoryName = requestParams.get("categoryName");
         boolean isCategorySelected = categoryName != null;
         List<Product> products;
         if (sort == null) {
             if (isCategorySelected) {
-                products = daoProduct.findAll().stream()
-                        .filter(p -> p.getCategory().getName().equals(categoryName))
-                        .toList();
+                products = daoProduct.findAllByCategoryName(categoryName);
             } else {
                 products = daoProduct.findAll();
             }
@@ -136,19 +134,14 @@ public class ServiceProductImpl implements ServiceProduct {
             switch (sort) {
                 case "name":
                     if (isCategorySelected) {
-                        products = daoProduct.findAllByOrderByName().stream()
-                                .filter(p -> p.getCategory().getName().equals(categoryName))
-                                .toList();
+                        products = daoProduct.findAllByCategoryNameByOrderByName(categoryName);
                     } else {
-                        products = daoProduct.findAllByOrderByName().stream()
-                                .toList();
+                        products = daoProduct.findAllByOrderByName();
                     }
                     break;
-                case "category":
-                    if (isCategorySelected) {
-                        products = daoProduct.findAllByOrderByCategory().stream()
-                                .filter(p -> p.getCategory().getName().equals(categoryName))
-                                .toList();
+                case "categoryName":
+                    if (!isCategorySelected) {
+                        products = daoProduct.findAllByOrderByCategoryName();
                     } else {
                         products = daoProduct.findAllByOrderByCategory();
                     }
@@ -166,23 +159,23 @@ public class ServiceProductImpl implements ServiceProduct {
         return products;
     }
 
-    @Override // remove ???
-    public List<Product> readAllByOrderByName() {
-        log.debug("Start ServiceProduct 'ReadAll'");
-        List<Product> products = daoProduct.findAllByOrderByName();
-        if (products.isEmpty()) {
-            log.info("List of Products is empty");
-        }
-        return products;
-    }
-
-    @Override // remove ???
-    public List<Product> readAllByOrderByCategory() {
-        log.debug("Start ServiceProduct 'ReadAll'");
-        List<Product> products = daoProduct.findAllByOrderByCategory();
-        if (products.isEmpty()) {
-            log.info("List of Products is empty");
-        }
-        return products;
-    }
+//    @Override // remove ???
+//    public List<Product> readAllByOrderByName() {
+//        log.debug("Start ServiceProduct 'ReadAll'");
+//        List<Product> products = daoProduct.findAllByOrderByName();
+//        if (products.isEmpty()) {
+//            log.info("List of Products is empty");
+//        }
+//        return products;
+//    }
+//
+//    @Override // remove ???
+//    public List<Product> readAllByOrderByCategory() {
+//        log.debug("Start ServiceProduct 'ReadAll'");
+//        List<Product> products = daoProduct.findAllByOrderByCategory();
+//        if (products.isEmpty()) {
+//            log.info("List of Products is empty");
+//        }
+//        return products;
+//    }
 }
