@@ -8,32 +8,37 @@ import pl.senla.pricer.entity.Product;
 import java.util.List;
 
 @Repository
-public interface DaoProduct  extends JpaRepository<Product, Long> {
+public interface DaoProduct extends JpaRepository<Product, Long> {
 
     Product findByName(String name);
+
     List<Product> findAllByOrderByName();
+
     List<Product> findAllByOrderByCategory();
 
-    @Query(value = "SELECT p.id, p.name, p.category_id " +
-            "FROM product p JOIN " +
+    @Query(value = "SELECT p.id, p.name, p.category_id FROM " +
+            "product p JOIN " +
             "(SELECT c.id, c.name FROM category c " +
-            "WHERE c.name=?) as c2 " +
-            "ON  p.category_id=c2.id")
+            "WHERE c.name=:categoryName) c2 " +
+            "ON p.category_id=c2.id",
+            nativeQuery = true)
     List<Product> findAllByCategoryName(String categoryName);
 
-    @Query(value = "SELECT p.id, p.name, p.category_id " +
-            "FROM product p JOIN " +
+    @Query(value = "SELECT p.id, p.name, p.category_id FROM " +
+            "product p JOIN " +
             "(SELECT c.id, c.name FROM category c " +
-            "WHERE c.name=?) as c2 " +
-            "ON  p.category_id=c2.id" +
-            "ORDER BY p.name")
+            "WHERE c.name = :categoryName) c2 " +
+            "ON p.category_id=c2.id " +
+            "ORDER BY p.name",
+            nativeQuery = true)
     List<Product> findAllByCategoryNameByOrderByName(String categoryName);
 
-    @Query(value = "SELECT p.id, p.name, p.category_id " +
-            "FROM product p JOIN " +
-            "(SELECT c.id, c.name FROM category c " +
-            "ON p.category_id=c.id" +
-            "ORDER BY c.name")
+    @Query(value = "SELECT p.id, p.name, p.category_id FROM " +
+            "product p JOIN " +
+//            "SELECT c.id, c.name FROM " +
+            "category c ON p.category_id=c.id " +
+            "ORDER BY c.name",
+            nativeQuery = true)
     List<Product> findAllByOrderByCategoryName();
 
 }

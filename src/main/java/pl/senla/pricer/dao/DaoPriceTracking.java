@@ -14,9 +14,9 @@ public interface DaoPriceTracking extends JpaRepository<PriceTracking, Long> {
     @Query(value = "SELECT " +
             "pt.id, pt.product_id, pt.shop_id, pt.price, pt.registration_date " +
             "FROM price_tracking pt " +
-            "WHERE pt.product_id=? AND " +
-            "pt.registration_date=? AND " +
-            "pt.shop_id=?",
+            "WHERE pt.product_id=:productId AND " +
+            "pt.registration_date=:regDate AND " +
+            "pt.shop_id=:shopId",
             nativeQuery = true)
     PriceTracking findPriceForProductShopDate(Long productId, String regDate, Long shopId);
 
@@ -24,8 +24,8 @@ public interface DaoPriceTracking extends JpaRepository<PriceTracking, Long> {
     @Query(value = "SELECT " +
             "pt.id, pt.product_id, pt.shop_id, pt.price, pt.registration_date " +
             "FROM pricer.price_tracking pt " +
-            "WHERE pt.product_id=? AND " +
-            "pt.registration_date BETWEEN ? AND ? " +
+            "WHERE pt.product_id=:productId AND " +
+            "pt.registration_date BETWEEN :startDateString AND :endDateString " +
             "ORDER BY pt.registration_date ASC",
             nativeQuery = true)
     List<PriceTracking> findPricesForProductInPeriod(Long productId, String startDateString, String endDateString);
@@ -34,10 +34,10 @@ public interface DaoPriceTracking extends JpaRepository<PriceTracking, Long> {
     @Query(value = "SELECT DISTINCT " +
             "pt.id, pt.product_id, pt.shop_id, pt.price, pt.registration_date " +
             "FROM price_tracking pt " +
-            "WHERE pt.product_id=? AND " +
-            "pt.registration_date=? AND " +
-            "(pt.shop_id=? OR " +
-            "pt.shop_id=?)",
+            "WHERE pt.product_id=:productId AND " +
+            "pt.registration_date=:regDate AND " +
+            "(pt.shop_id=:shopId1 OR " +
+            "pt.shop_id=:shopId2)",
             nativeQuery = true)
     List<PriceTracking> findPricesForProductIn2ShopsAtDate(Long productId, String regDate, Long shopId1, Long shopId2);
 
