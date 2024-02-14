@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.senla.pricer.dao.DaoUser;
 import pl.senla.pricer.dto.UserDto;
+import pl.senla.pricer.entity.Role;
 import pl.senla.pricer.entity.User;
 import pl.senla.pricer.exception.UserNotFoundException;
 
@@ -39,10 +40,29 @@ public class ServiceUserImpl implements ServiceUser {
             User userNew = new User();
             userNew.setUsername(username);
             userNew.setPassword(userDto.getPassword());
+            userNew.setRole(Role.REGULAR);
             userNew.setIsEnabled(true);
             return daoUser.save(userNew);
         }
         log.info("This User is already exists.");
+        return null;
+    }
+
+    @Override
+    public User createAdmin(UserDto userDto) {
+        log.debug("Start ServiceUser 'CreateAdmin'");
+        String username = userDto.getUsername();
+        boolean isPresent = readAll(null).stream()
+                .anyMatch(u -> u.getUsername().equals(username));
+        if (!isPresent) {
+            User userNew = new User();
+            userNew.setUsername(username);
+            userNew.setPassword(userDto.getPassword());
+            userNew.setRole(Role.ADMIN);
+            userNew.setIsEnabled(true);
+            return daoUser.save(userNew);
+        }
+        log.info("This ADMIN/User is already exists.");
         return null;
     }
 
@@ -59,9 +79,6 @@ public class ServiceUserImpl implements ServiceUser {
         Optional<User> userUpdate = daoUser.findById(id);
         if (userUpdate.isPresent()) {
             User userNew = userUpdate.get();
-//            userNew.setUsername(userDto.getUsername());
-//            userNew.setPassword(userDto.getPassword());
-//            userNew.setIsEnabled(userDto.getIsEnabled());
             return daoUser.save(userNew);
         }
         log.info("User not found.");

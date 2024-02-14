@@ -56,7 +56,8 @@ public class ServiceCategoryImpl implements ServiceCategory{
         log.debug("Start ServiceCategory 'Create'");
         String name = categoryDto.getName();
         if (daoCategory.findByName(name) == null) {
-            return daoCategory.save(CategoryDtoConverter.convertDtoToCategory(categoryDto));
+            Category category = CategoryDtoConverter.convertDtoToCategory(categoryDto);
+            return daoCategory.save(category);
         }
         log.debug("ServiceCategory: Category is already exist");
         return null;

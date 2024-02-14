@@ -154,12 +154,12 @@ class ServiceShopImplTest {
 
     @Test
     void create_forbidden() {
-        ShopDto testDtoShop = new ShopDto("Name Test", "City Test", "Address Test");
+        ShopDto testShopDto = new ShopDto("Name Test", "City Test", "Address Test");
         String testAddress = "Address Test";
 
         when(daoShopMock.findByAddress(testAddress)).thenReturn(any(Shop.class));
 
-        Shop createdShop = serviceShopMock.create(testDtoShop);
+        Shop createdShop = serviceShopMock.create(testShopDto);
 
         assertNull(createdShop);
         verify(daoShopMock, times(1)).findByAddress(testAddress);

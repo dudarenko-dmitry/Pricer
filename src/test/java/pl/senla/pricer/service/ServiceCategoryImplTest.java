@@ -120,7 +120,7 @@ class ServiceCategoryImplTest {
         Category savedCategory = new Category();
         savedCategory.setName("TestCategory");
 
-        when(daoCategoryMock.findByName("TestCategory")).thenReturn(any(Category.class));
+        when(daoCategoryMock.findByName("TestCategory")).thenReturn(savedCategory);
 
         Category createdCategory = serviceCategoryMock.create(categoryDto);
 
@@ -184,10 +184,9 @@ class ServiceCategoryImplTest {
     @Test
     void delete_success() {
         Long idTest = 1L;
-
         when(daoCategoryMock.existsById(idTest)).thenReturn(true);
         serviceCategoryMock.delete(idTest);
-
+        verify(daoCategoryMock, times(1)).existsById(idTest);
         verify(daoCategoryMock, times(1)).deleteById(idTest);
     }
 
