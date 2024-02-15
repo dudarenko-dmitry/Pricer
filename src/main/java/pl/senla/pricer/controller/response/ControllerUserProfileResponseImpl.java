@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.senla.pricer.dto.UserProfileDto;
 import pl.senla.pricer.entity.UserProfile;
@@ -24,6 +25,7 @@ public class ControllerUserProfileResponseImpl implements ControllerUserProfileR
     private ServiceUserProfile serviceUserProfile;
 
     @Override
+    @PreAuthorize("hasAuthority('admin:write')")
     @GetMapping
     public ResponseEntity<String> readAll(@RequestParam Map<String, String> requestParams) {
         log.debug("ControllerUserProfile 'ReadAll'");
@@ -42,6 +44,8 @@ public class ControllerUserProfileResponseImpl implements ControllerUserProfileR
     }
 
     @Override
+    @PreAuthorize("hasAuthority('write')")
+//    @PreAuthorize("#username == authentication.principal.username")
     @PostMapping("/")
     public ResponseEntity<String> create(@RequestBody UserProfileDto userProfileDto) {
         log.debug("ControllerUserProfile 'Create'");
@@ -60,6 +64,8 @@ public class ControllerUserProfileResponseImpl implements ControllerUserProfileR
     }
 
     @Override
+    @PreAuthorize("hasAuthority('read')")
+//    @PreAuthorize("#username == authentication.principal.username")
     @GetMapping("/{id}")
     public ResponseEntity<String> read(@PathVariable Long id) {
         log.debug("ControllerUserProfile 'Read'");
@@ -78,6 +84,8 @@ public class ControllerUserProfileResponseImpl implements ControllerUserProfileR
     }
 
     @Override
+    @PreAuthorize("hasAuthority('admin:write')")
+//    @PreAuthorize("#username == authentication.principal.username")
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody UserProfileDto userProfile) {
         log.debug("ControllerUserProfile 'Update'");
@@ -96,6 +104,8 @@ public class ControllerUserProfileResponseImpl implements ControllerUserProfileR
     }
 
     @Override
+    @PreAuthorize("hasAuthority('admin:write')")
+//    @PreAuthorize("#username == authentication.principal.username")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         log.debug("ControllerUserProfile 'Delete'");

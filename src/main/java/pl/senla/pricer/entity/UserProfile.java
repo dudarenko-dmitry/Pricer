@@ -12,7 +12,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user_profile")
+@Table(name = "user_profile",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"first_name", "last_name"}))
 public class UserProfile implements Serializable {
 
     @Serial
@@ -27,5 +28,8 @@ public class UserProfile implements Serializable {
 
     @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @Column(name = "user_id")
+    private Long userId;
 
 }

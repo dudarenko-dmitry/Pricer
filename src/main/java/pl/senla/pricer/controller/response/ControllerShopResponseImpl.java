@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.senla.pricer.dto.ShopDto;
 import pl.senla.pricer.entity.Shop;
@@ -24,6 +25,7 @@ public class ControllerShopResponseImpl implements ControllerShopResponse {
     private ServiceShop serviceShop;
 
     @Override
+    @PreAuthorize("hasAuthority('read')")
     @GetMapping
     public ResponseEntity<String> readAll(@RequestParam Map<String,String> requestParams) {
         log.debug("ControllerShop 'ReadAll'");
@@ -42,6 +44,7 @@ public class ControllerShopResponseImpl implements ControllerShopResponse {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('write')")
     @PostMapping("/")
     public ResponseEntity<String> create(@RequestBody ShopDto shopDto) {
         log.debug("ControllerCategory 'Create'");
@@ -59,6 +62,7 @@ public class ControllerShopResponseImpl implements ControllerShopResponse {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('read')")
     @GetMapping("/{id}")
     public ResponseEntity<String> read(@PathVariable Long id) {
         log.debug("ControllerCategory 'Read'");
@@ -76,6 +80,7 @@ public class ControllerShopResponseImpl implements ControllerShopResponse {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('update')")
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody ShopDto shop) {
         log.debug("ControllerCategory 'Update'");
@@ -93,6 +98,7 @@ public class ControllerShopResponseImpl implements ControllerShopResponse {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         log.debug("ControllerCategory 'Delete'");

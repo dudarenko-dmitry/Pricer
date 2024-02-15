@@ -7,7 +7,7 @@ import pl.senla.pricer.entity.Category;
 import java.util.List;
 
 @Repository
-public interface DaoCategory  extends JpaRepository<Category, Long> {
+public interface DaoCategory extends JpaRepository<Category, Long> {
 
     List<Category> findAllByOrderByName();
     Category findByName(String name);

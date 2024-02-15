@@ -25,10 +25,10 @@ Mandatory:
 +	Adherence to MVC principles.
 +	Adherence to the principles of "High Cohesion" and "Loose Coupling."
 +	Well-thought-out modular structure (package structure).
-•	Reasonable use of multiple design patterns.
++	Reasonable use of multiple design patterns.
 +	Have a database diagram.
-•	The database must be brought to at least the 3rd normal form.
-•	Have a database initialization script (SQL).
++ 	The database must be brought to at least the 3rd normal form.
++	Have a database initialization script (SQL).
 •	Have JUnit tests covering the main functionality.
 +	Have an exception handling system.
 +	Have a multi-level logging system.

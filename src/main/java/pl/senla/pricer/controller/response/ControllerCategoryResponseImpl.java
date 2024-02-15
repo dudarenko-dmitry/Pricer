@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.senla.pricer.dto.CategoryDto;
 import pl.senla.pricer.entity.Category;
@@ -15,9 +16,9 @@ import pl.senla.pricer.utils.CategoryDtoConverter;
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("v2/categories")
 @Slf4j
+@RestController
+@RequestMapping("/v2/categories")
 public class ControllerCategoryResponseImpl implements ControllerCategoryResponse {
 
     @Autowired
@@ -25,6 +26,7 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
 
     @Override
     @GetMapping
+    @PreAuthorize("hasAuthority('read')")
     public ResponseEntity<String> readAll(@RequestParam Map<String,String> requestParams) {
         log.debug("ControllerCategory 'ReadAll'");
         try {
@@ -43,6 +45,7 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
 
     @Override
     @PostMapping("/")
+    @PreAuthorize("hasAuthority('write')")
     public ResponseEntity<String> create(@RequestBody CategoryDto categoryDto) {
         log.debug("ControllerCategory 'Create'");
         try {
@@ -61,6 +64,7 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
 
     @Override
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('read')")
     public ResponseEntity<String> read(@PathVariable Long id) {
         log.debug("ControllerCategory 'Read'");
         try {
@@ -78,6 +82,7 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
 
     @Override
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('update')")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody CategoryDto category) {
         log.debug("ControllerCategory 'Update'");
         try {
@@ -96,6 +101,7 @@ public class ControllerCategoryResponseImpl implements ControllerCategoryRespons
 
     @Override
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('delete')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         log.debug("ControllerCategory 'Delete'");
         try {

@@ -12,8 +12,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"email"}))
+//@Table(name = "users",
+@Table(name = "users",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"username"}))
 public class User implements Serializable {
 
     @Serial
@@ -23,18 +24,21 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "email", nullable = false)
-    private String email;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
+    @Column(name = "enabled", columnDefinition = "boolean default true")
+    private Boolean isEnabled = true;
+
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
 
     @OneToOne
-    @JoinColumn(name = "user_profile_id")
+    @JoinColumn(name = "id")
     private UserProfile userProfile;
 
 }

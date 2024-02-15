@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ServiceCategory extends ServiceCRUDAll<Category, CategoryDto> {
 
-    List<Category> readAllOrderByName();
+//    List<Category> readAllOrderByName();
     Category readByName(String filter);
 
 }

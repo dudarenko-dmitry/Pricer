@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.w3.org/1999/xhtml" lang="">
+<head>
+    <meta charset="UTF-8">
+    <title>registration</title>
+</head>
+<body>
+<h1>Registration New User page</h1>
+<form th:action="@{/auth/registration}" method="post">
+    <div><label> User Name (email) : <input type="text" name="username"/> </label></div>
+    <div><label> Password: <input type="password" name="password"/> </label></div>
+    <div><input type="submit" value="Save data"/></div>
+</form>
+<h1> </h1>
+<a th:href="@{/auth/login}">Use existing Account</a>
+</body>
+</html>

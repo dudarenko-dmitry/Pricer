@@ -56,7 +56,8 @@ public class ServiceCategoryImpl implements ServiceCategory{
         log.debug("Start ServiceCategory 'Create'");
         String name = categoryDto.getName();
         if (daoCategory.findByName(name) == null) {
-            return daoCategory.save(CategoryDtoConverter.convertDtoToCategory(categoryDto));
+            Category category = CategoryDtoConverter.convertDtoToCategory(categoryDto);
+            return daoCategory.save(category);
         }
         log.debug("ServiceCategory: Category is already exist");
         return null;
@@ -80,7 +81,7 @@ public class ServiceCategoryImpl implements ServiceCategory{
             return daoCategory.save(newCategory);
         }
         log.debug(String.valueOf(new CategoryNotFoundException(id)));
-        return null;
+        throw new CategoryNotFoundException(id);
     }
 
     @Override
@@ -88,24 +89,25 @@ public class ServiceCategoryImpl implements ServiceCategory{
     public void delete(Long id) {
         log.debug("Start ServiceCategory 'Delete by ID'");
         if (!daoCategory.existsById(id)) {
-            log.debug(String.valueOf(new CategoryNotFoundException(id)));
+            throw new CategoryNotFoundException(id);
         } else {
             log.debug("ServiceCategory deleted Category");
             daoCategory.deleteById(id);
         }
     }
 
-    @Override // remove ???
-    public List<Category> readAllOrderByName() {
-        log.debug("Start ServiceCategory 'ReadAll sort by Name'");
-        List<Category> categories = daoCategory.findAllByOrderByName();
-        if (categories.isEmpty()) {
-            log.info("List of Categories is empty");
-            return categories;
-        }
-        log.debug("ServiceCategory 'ReadAll' returns List of Categories");
-        return categories;
-    }
+    // don't use. Deprecated
+//    @Override // remove ???
+//    public List<Category> readAllOrderByName() {
+//        log.debug("Start ServiceCategory 'ReadAll sort by Name'");
+//        List<Category> categories = daoCategory.findAllByOrderByName();
+//        if (categories.isEmpty()) {
+//            log.info("List of Categories is empty");
+//            return categories;
+//        }
+//        log.debug("ServiceCategory 'ReadAll' returns List of Categories");
+//        return categories;
+//    }
 
     @Override
     public Category readByName(String name) {

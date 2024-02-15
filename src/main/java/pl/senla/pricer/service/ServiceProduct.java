@@ -7,8 +7,9 @@ import java.util.List;
 
 public interface ServiceProduct extends ServiceCRUDAll<Product, ProductDto> {
 
-    List<Product> readAllByOrderByName();
-    List<Product> readAllByOrderByCategory();
+//    List<Product> readAllByOrderByName();
+//    List<Product> readAllByOrderByCategory();
+    List<Product> createFromFile(String filePath);
     Product readByName(String name);
 
 }

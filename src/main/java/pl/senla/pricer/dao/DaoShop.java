@@ -10,7 +10,7 @@ import java.util.List;
 public interface DaoShop  extends JpaRepository<Shop, Long> {
 
     Shop findByAddress(String address);
-    List<Shop> findAllByOrderByName();
     List<Shop> findAllByName(String name);
-
+    List<Shop> findAllByOrderByName();
+    List<Shop> findAllByOrderByAddress();
 }

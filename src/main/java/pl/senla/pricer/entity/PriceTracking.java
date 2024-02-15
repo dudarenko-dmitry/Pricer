@@ -15,7 +15,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "price_tracking")
+@Table(name = "price_tracking",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"product_id", "shop_id", "registration_date"}))
 public class PriceTracking implements Serializable {
 
     @Serial

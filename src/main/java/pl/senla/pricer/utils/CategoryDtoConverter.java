@@ -16,7 +16,9 @@ public final class CategoryDtoConverter {
     }
 
     public static Category convertDtoToCategory(CategoryDto categoryDto) {
-        return new Category(null, categoryDto.getName());
+        Category category = new Category();
+        category.setName(categoryDto.getName());
+        return category;
     }
 
 }

@@ -34,12 +34,7 @@ public class ServiceUserProfileImpl implements ServiceUserProfile {
         log.debug("Start ServiceUserProfile 'Create'");
         String firstName = userProfileDto.getFirstName();
         String lastName = userProfileDto.getLastName();
-        UserProfile userProfile = readAll(null).stream()
-                .filter(p -> p.getFirstName().equals(firstName)
-                        && p.getLastName().equals(lastName))
-                .findAny()
-                .orElse(null);
-        if (userProfile == null) {
+        if (daoUserProfile.findByFirstNameAndLastName(firstName, lastName) == null) {
             log.debug("Create new UserProfile");
             UserProfile userProfileNew = new UserProfile();
             userProfileNew.setFirstName(firstName);
