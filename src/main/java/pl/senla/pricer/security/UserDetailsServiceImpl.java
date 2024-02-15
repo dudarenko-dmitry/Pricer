@@ -20,12 +20,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.debug("UserDetailsServiceImpl: loadUserByUsername");
-        try {
-            User user = daoUser.findByUsername(username);
-            return UserDetailsConverter.convertUserToUserDetails(user);
-        } catch (UsernameNotFoundException e) {
-            log.info("User doesn't exist\n" + e);
-            return null;
+        User user = daoUser.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User doesn't exist\n");
         }
+        return UserDetailsConverter.convertUserToUserDetails(user);
     }
 }

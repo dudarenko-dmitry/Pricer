@@ -2,6 +2,7 @@ package pl.senla.pricer.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.senla.pricer.dao.DaoUser;
 import pl.senla.pricer.dto.UserDto;
@@ -19,6 +20,8 @@ public class ServiceUserImpl implements ServiceUser {
 
     @Autowired
     private DaoUser daoUser;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> readAll(Map<String, String> requestParams) {
@@ -39,7 +42,7 @@ public class ServiceUserImpl implements ServiceUser {
         if (!isPresent) {
             User userNew = new User();
             userNew.setUsername(username);
-            userNew.setPassword(userDto.getPassword());
+            userNew.setPassword(passwordEncoder.encode(userDto.getPassword()));
             userNew.setRole(Role.REGULAR);
             userNew.setIsEnabled(true);
             return daoUser.save(userNew);
@@ -57,7 +60,7 @@ public class ServiceUserImpl implements ServiceUser {
         if (!isPresent) {
             User userNew = new User();
             userNew.setUsername(username);
-            userNew.setPassword(userDto.getPassword());
+            userNew.setPassword(passwordEncoder.encode(userDto.getPassword()));
             userNew.setRole(Role.ADMIN);
             userNew.setIsEnabled(true);
             return daoUser.save(userNew);
@@ -79,6 +82,8 @@ public class ServiceUserImpl implements ServiceUser {
         Optional<User> userUpdate = daoUser.findById(id);
         if (userUpdate.isPresent()) {
             User userNew = userUpdate.get();
+            userNew.setUsername(userDto.getUsername());
+            userNew.setPassword(passwordEncoder.encode(userDto.getPassword()));
             return daoUser.save(userNew);
         }
         log.info("User not found.");

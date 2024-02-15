@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pl.senla.pricer.dto.PriceTrackingDto;
 import pl.senla.pricer.entity.PriceTracking;
@@ -26,6 +27,7 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     private ServicePriceTracking servicePriceTracking;
 
     @Override
+    @PreAuthorize("hasAuthority('read')")
     @GetMapping
     public ResponseEntity<String> readAll(@RequestParam Map<String, String> requestParams) {
         log.debug("ControllerPriceTracking 'ReadAll'");
@@ -44,6 +46,7 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     }
 
     @Override
+    @PreAuthorize("hasAuthority('write')")
     @PostMapping("/")
     public ResponseEntity<String> create(@RequestBody PriceTrackingDto priceTrackingDto) {
         log.debug("ControllerPriceTracking 'Create'");
@@ -62,6 +65,7 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     }
 
     @Override
+    @PreAuthorize("hasAuthority('write')")
     @PostMapping("/load/")
     public ResponseEntity<String> createFromFile(@RequestBody String filePath) {
         log.debug("ControllerPriceTracking 'createFromFile'");
@@ -81,6 +85,7 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     }
 
     @Override
+    @PreAuthorize("hasAuthority('read')")
     @GetMapping("/{id}")
     public ResponseEntity<String> read(@PathVariable Long id) {
         log.debug("ControllerPriceTracking 'Read'");
@@ -99,6 +104,7 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     }
 
     @Override
+    @PreAuthorize("hasAuthority('update')")
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody PriceTrackingDto priceTracking) {
         log.debug("ControllerPriceTracking 'Update'");
@@ -117,6 +123,7 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     }
 
     @Override
+    @PreAuthorize("hasAuthority('delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         log.debug("ControllerPriceTracking 'Delete'");
@@ -133,6 +140,7 @@ public class ControllerPriceTrackingResponseImpl implements ControllerPriceTrack
     }
 
     @Override
+    @PreAuthorize("hasAuthority('read')")
     @GetMapping("/dynamic")
     public ResponseEntity<String> getPriceDynamic(@RequestParam Map<String, String> requestParams) {
         log.debug("ControllerPriceTracking 'getPriceDynamic'");

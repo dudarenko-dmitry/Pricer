@@ -6,7 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import pl.senla.pricer.dao.DaoCategory;
 import pl.senla.pricer.dao.DaoProduct;
 import pl.senla.pricer.dto.ProductDto;
 import pl.senla.pricer.entity.Category;
@@ -68,13 +67,13 @@ class ServiceProductImplTest {
         listOfCategorySaved.add(product1);
         listOfCategorySaved.add(product3);
 
-        when(daoProductMock.findAllByCategoryName(testCategoryName)).thenReturn(listOfCategorySaved);
+        when(daoProductMock.findAllByCategory(testCategoryName)).thenReturn(listOfCategorySaved);
 
         List<Product> readList = serviceProductMock.readAll(requestParams);
 
         assertNotNull(readList);
         assertEquals(readList, listOfCategorySaved);
-        verify(daoProductMock, times(1)).findAllByCategoryName(testCategoryName);
+        verify(daoProductMock, times(1)).findAllByCategory(testCategoryName);
     }
 
     @Test
@@ -92,13 +91,13 @@ class ServiceProductImplTest {
         listOfCategorySaved.add(0, product3);
         listOfCategorySaved.add(1, product1);
 
-        when(daoProductMock.findAllByCategoryNameByOrderByName(testCategoryName)).thenReturn(listOfCategorySaved);
+        when(daoProductMock.findAllByCategoryByOrderByName(testCategoryName)).thenReturn(listOfCategorySaved);
 
         List<Product> readList = serviceProductMock.readAll(requestParams);
 
         assertNotNull(readList);
         assertEquals(readList, listOfCategorySaved);
-        verify(daoProductMock, times(1)).findAllByCategoryNameByOrderByName(testCategoryName);
+        verify(daoProductMock, times(1)).findAllByCategoryByOrderByName(testCategoryName);
     }
 
     @Test

@@ -12,11 +12,6 @@ public final class UserDetailsConverter {
     }
 
     public static UserDetails convertUserToUserDetails(User user) {
-//        return org.springframework.security.core.userdetails.User.builder()
-//                .username(user.getUsername())
-//                .password(user.getPassword())
-//                .roles(String.valueOf(user.getRole().getAuthorities()))
-//                .build();
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),

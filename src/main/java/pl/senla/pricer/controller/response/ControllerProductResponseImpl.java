@@ -62,6 +62,7 @@ public class ControllerProductResponseImpl implements ControllerProductResponse 
     }
 
     @Override
+    @PreAuthorize("hasAuthority('write')")
     @PostMapping("/load/")
     public ResponseEntity<String> createFromFile(@RequestBody String filePath) {
         log.debug("ControllerProduct 'createFromFile'");
@@ -81,6 +82,7 @@ public class ControllerProductResponseImpl implements ControllerProductResponse 
     }
 
     @Override
+    @PreAuthorize("hasAuthority('read')")
     @GetMapping("/{id}")
     public ResponseEntity<String> read(@PathVariable Long id) {
         log.debug("ControllerProduct 'Read'");
@@ -98,6 +100,7 @@ public class ControllerProductResponseImpl implements ControllerProductResponse 
     }
 
     @Override
+    @PreAuthorize("hasAuthority('update')")
     @PutMapping("/{id}")
     public ResponseEntity<String> update(@PathVariable Long id, @RequestBody ProductDto product) {
         log.debug("ControllerProduct 'Update'");
@@ -116,6 +119,7 @@ public class ControllerProductResponseImpl implements ControllerProductResponse 
     }
 
     @Override
+    @PreAuthorize("hasAuthority('delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         log.debug("ControllerProduct 'Delete'");
