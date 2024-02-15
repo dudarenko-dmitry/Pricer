@@ -67,13 +67,13 @@ class ServiceProductImplTest {
         listOfCategorySaved.add(product1);
         listOfCategorySaved.add(product3);
 
-        when(daoProductMock.findAllByCategory(testCategoryName)).thenReturn(listOfCategorySaved);
+        when(daoProductMock.findAllByCategoryName(testCategoryName)).thenReturn(listOfCategorySaved);
 
         List<Product> readList = serviceProductMock.readAll(requestParams);
 
         assertNotNull(readList);
         assertEquals(readList, listOfCategorySaved);
-        verify(daoProductMock, times(1)).findAllByCategory(testCategoryName);
+        verify(daoProductMock, times(1)).findAllByCategoryName(testCategoryName);
     }
 
     @Test
@@ -91,13 +91,13 @@ class ServiceProductImplTest {
         listOfCategorySaved.add(0, product3);
         listOfCategorySaved.add(1, product1);
 
-        when(daoProductMock.findAllByCategoryByOrderByName(testCategoryName)).thenReturn(listOfCategorySaved);
+        when(daoProductMock.findAllByCategoryNameByOrderByName(testCategoryName)).thenReturn(listOfCategorySaved);
 
         List<Product> readList = serviceProductMock.readAll(requestParams);
 
         assertNotNull(readList);
         assertEquals(readList, listOfCategorySaved);
-        verify(daoProductMock, times(1)).findAllByCategoryByOrderByName(testCategoryName);
+        verify(daoProductMock, times(1)).findAllByCategoryNameByOrderByName(testCategoryName);
     }
 
     @Test
