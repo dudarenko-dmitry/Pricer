@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS product  (
+	id bigint AUTO_INCREMENT NOT NULL PRIMARY KEY,
+	name varchar(100) NOT NULL UNIQUE,
+	category_id bigint NOT NULL,
+	CONSTRAINT product_category_FK FOREIGN KEY (category_id)
+		REFERENCES category(id)
+		ON DELETE RESTRICT ON UPDATE CASCADE
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;

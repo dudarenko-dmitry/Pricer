@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS shop  (
+	id bigint AUTO_INCREMENT NOT NULL PRIMARY KEY,
+	name varchar(100) NOT NULL,
+	city varchar(100) NOT NULL,
+	address varchar(255) NOT NULL UNIQUE 
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_0900_ai_ci;
